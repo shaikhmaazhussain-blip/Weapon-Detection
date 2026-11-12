@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weapon Detection</title>
+  <style>
+    :root {
+      --bg: #f2f2f0;
+      --fg: #1a1a1a;
+      --muted: #5a5a5a;
+      --accent: #2d5a8a;
+      --accent-hover: #1e406e;
+      --border: #c8c8c0;
+      --warning-bg: #f5e6a0;
+      --warning-fg: #5a4a00;
+      --warning-border: #d4b840;
+      --error-bg: #f8d7da;
+      --error-fg: #721c24;
+      --error-border: #f5c6cb;
+      --card-bg: #ffffff;
+      --input-bg: #ffffff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .container {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px 16px;
+      flex: 1;
+    }
+    /* Warning banner */
+    .warning-banner {
+      background: var(--warning-bg);
+      border: 1px solid var(--warning-border);
+      color: var(--warning-fg);
+      padding: 16px;
+      margin-bottom: 24px;
+      font-weight: 600;
+      font-size: 14px;
+      text-align: center;
+    }
+    /* Title */
+    h1 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--fg);
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+    /* Upload area */
+    .upload-area {
+      border: 2px dashed var(--border);
+      background: var(--input-bg);
+      padding: 32px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      margin-bottom: 16px;
+    }
+    .upload-area:hover, .upload-area.drag-over {
+      border-color: var(--accent);
+      background: #fafafa;
+    }
+    .upload-area input[type="file"] {
+      display: none;
+    }
+    .upload-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 12px;
+      stroke: var(--muted);
+    }
+    .upload-text {
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .upload-text strong {
+      color: var(--fg);
+    }
+    .file-name {
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--fg);
+      font-weight: 500;
+    }
+    /* Controls */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: flex-end;
+      margin-bottom: 24px;
+    }
+    .control-group {
+      flex: 1;
+      min-width: 180px;
+    }
+    .control-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: var(--fg);
+    }
+    .control-group input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+    .confidence-value {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .btn {
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff;
+      transition: background 0.15s;
+      min-width: 120px;
+    }
+    .btn:hover:not(:disabled) {
+      background: var(--accent-hover);
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .btn-secondary {
+      background: var(--border);
+      color: var(--fg);
+    }
+    .btn-secondary:hover:not(:disabled) {
+      background: #b8b8b0;
+    }
+    /* Loading */
+    .loading {
+      display: none;
+      align-items: center;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+    .loading.show { display: flex; }
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    /* Results */
+    .results {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .results.show { display: flex; }
+    .result-image {
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      border: 1px solid var(--border);
+      background: #fff;
+    }
+    .detections-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+    }
+    .detections-table th,
+    .detections-table td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .detections-table th {
+      background: #fafafa;
+      font-weight: 600;
+      color: var(--fg);
+    }
+    .detections-table tr:last-child td {
+      border-bottom: none;
+    }
+    .detections-table td.confidence {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    .inference-time {
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .inference-time strong {
+      color: var(--fg);
+    }
+    .no-detections {
+      padding: 16px;
+      text-align: center;
+      color: var(--muted);
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+    }
+    /* Error message */
+    .error-message {
+      display: none;
+      background: var(--error-bg);
+      border: 1px solid var(--error-border);
+      color: var(--error-fg);
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      font-size: 13px;
+    }
+    .error-message.show { display: block; }
+    /* Recent alerts panel */
+    .alerts-panel {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+    .alerts-panel h2 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .alerts-list {
+      display: grid;
+      gap: 8px;
+    }
+    .alert-item {
+      display: flex;
+      gap: 12px;
+      padding: 12px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      align-items: center;
+    }
+    .alert-thumb {
+      width: 80px;
+      height: 60px;
+      object-fit: cover;
+      border: 1px solid var(--border);
+      background: #f5f5f5;
+      flex-shrink: 0;
+    }
+    .alert-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .alert-time {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .alert-confidence {
+      font-size: 13px;
+      font-weight: 500;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    .alerts-empty {
+      padding: 16px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+    }
+    .alerts-error {
+      padding: 12px;
+      background: var(--error-bg);
+      border: 1px solid var(--error-border);
+      color: var(--error-fg);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Warning Banner -->
+    <div class="warning-banner" role="alert">
+      AI-generated detection. Not proof that a weapon is present. A human must review every alert.
+    </div>
+
+    <!-- Title -->
+    <h1>Weapon Detection</h1>
+    <p class="subtitle">Upload an image to run detection. Adjust the confidence threshold if needed.</p>
+
+    <!-- Upload Area -->
+    <div class="upload-area" id="uploadArea" tabindex="0" role="button" aria-label="Upload image">
+      <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="17 8 12 3 7 8"/>
+        <line x1="12" y1="3" x2="12" y2="15"/>
+      </svg>
+      <p class="upload-text">Drag & drop or <strong>click to select</strong> an image (.jpg, .jpeg, .png, max 10 MB)</p>
+      <input type="file" id="fileInput" accept=".jpg,.jpeg,.png" aria-label="Select image file">
+      <p class="file-name" id="fileName" aria-live="polite"></p>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <div class="control-group">
+        <label for="confidence">Confidence threshold</label>
+        <input type="range" id="confidence" min="0.05" max="0.90" step="0.05" value="0.35">
+        <p class="confidence-value" id="confidenceValue">0.35</p>
+      </div>
+      <button class="btn" id="detectBtn" disabled>Detect</button>
+      <button class="btn btn-secondary" id="clearBtn" disabled>Clear</button>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading" id="loading" aria-live="polite">
+      <div class="spinner" aria-hidden="true"></div>
+      <span>Running detection...</span>
+    </div>
+
+    <!-- Error -->
+    <div class="error-message" id="errorMessage" role="alert" aria-live="assertive"></div>
+
+    <!-- Results -->
+    <div class="results" id="results" aria-live="polite">
+      <img class="result-image" id="resultImage" alt="Annotated detection result">
+      <div id="detectionsContainer">
+        <!-- Table or no-detections message injected here -->
+      </div>
+      <p class="inference-time" id="inferenceTime"><strong>Inference time:</strong> <span id="inferenceValue"></span> ms</p>
+    </div>
+
+    <!-- Recent Alerts Panel -->
+    <section class="alerts-panel" aria-labelledby="alertsTitle">
+      <h2 id="alertsTitle">Recent Alerts</h2>
+      <div class="alerts-list" id="alertsList">
+        <div class="alerts-empty">Loading alerts...</div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // DOM elements
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const fileName = document.getElementById('fileName');
+    const confidenceInput = document.getElementById('confidence');
+    const confidenceValue = document.getElementById('confidenceValue');
+    const detectBtn = document.getElementById('detectBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const loading = document.getElementById('loading');
+    const errorMessage = document.getElementById('errorMessage');
+    const results = document.getElementById('results');
+    const resultImage = document.getElementById('resultImage');
+    const detectionsContainer = document.getElementById('detectionsContainer');
+    const inferenceValue = document.getElementById('inferenceValue');
+    const alertsList = document.getElementById('alertsList');
+
+    let currentFile = null;
+
+    // Update confidence display
+    confidenceInput.addEventListener('input', () => {
+      confidenceValue.textContent = parseFloat(confidenceInput.value).toFixed(2);
+    });
+
+    // File selection
+    function handleFile(file) {
+      if (!file) return;
+      const validTypes = ['image/jpeg', 'image/png'];
+      if (!validTypes.includes(file.type)) {
+        showError('Invalid file type. Please select a .jpg, .jpeg, or .png image.');
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        showError('File too large. Maximum size is 10 MB.');
+        return;
+      }
+      currentFile = file;
+      fileName.textContent = file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
+      detectBtn.disabled = false;
+      clearBtn.disabled = false;
+      hideError();
+      hideResults();
+    }
+
+    uploadArea.addEventListener('click', () => fileInput.click());
+    uploadArea.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        fileInput.click();
+      }
+    });
+    fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+
+    // Drag and drop
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.classList.add('drag-over');
+    });
+    uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag-over'));
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('drag-over');
+      if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+    });
+
+    // Clear
+    clearBtn.addEventListener('click', () => {
+      currentFile = null;
+      fileInput.value = '';
+      fileName.textContent = '';
+      detectBtn.disabled = true;
+      clearBtn.disabled = true;
+      hideError();
+      hideResults();
+    });
+
+    // Detect
+    detectBtn.addEventListener('click', async () => {
+      if (!currentFile) return;
+      hideError();
+      hideResults();
+      loading.classList.add('show');
+      detectBtn.disabled = true;
+
+      const formData = new FormData();
+      formData.append('file', currentFile);
+      const conf = parseFloat(confidenceInput.value);
+
+      try {
+        const response = await fetch('/predict?conf=' + conf, {
+          method: 'POST',
+          body: formData,
+        });
+        const data = await response.json();
+        loading.classList.remove('show');
+        detectBtn.disabled = false;
+
+        if (!response.ok) {
+          showError(data.detail || 'Detection failed');
+          return;
+        }
+        showResults(data);
+      } catch (err) {
+        loading.classList.remove('show');
+        detectBtn.disabled = false;
+        showError('Network error: ' + err.message);
+      }
+    });
+
+    // Show results
+    function showResults(data) {
+      // Annotated image
+      resultImage.src = 'data:image/jpeg;base64,' + data.annotated_image;
+      resultImage.alt = 'Detection result with ' + data.count + ' detection(s)';
+
+      // Detections table
+      if (data.detections.length === 0) {
+        detectionsContainer.innerHTML = '<div class="no-detections">No weapons detected above the confidence threshold.</div>';
+      } else {
+        let html = '<table class="detections-table"><thead><tr><th>#</th><th>Class</th><th>Confidence</th><th>Box [x1, y1, x2, y2]</th></tr></thead><tbody>';
+        data.detections.forEach((d, i) => {
+          const box = d.box.map(v => Math.round(v)).join(', ');
+          html += '<tr><td>' + (i + 1) + '</td><td>' + d.class_name + '</td><td class="confidence">' + d.confidence.toFixed(3) + '</td><td>[' + box + ']</td></tr>';
+        });
+        html += '</tbody></table>';
+        detectionsContainer.innerHTML = html;
+      }
+
+      // Inference time
+      inferenceValue.textContent = data.inference_ms.toFixed(1);
+
+      results.classList.add('show');
+    }
+
+    function hideResults() {
+      results.classList.remove('show');
+      resultImage.src = '';
+      detectionsContainer.innerHTML = '';
+      inferenceValue.textContent = '';
+    }
+
+    function showError(msg) {
+      errorMessage.textContent = msg;
+      errorMessage.classList.add('show');
+    }
+    function hideError() {
+      errorMessage.classList.remove('show');
+      errorMessage.textContent = '';
+    }
+
+    // Load recent alerts
+    async function loadAlerts() {
+      try {
+        const response = await fetch('/alerts?limit=10');
+        const data = await response.json();
+        renderAlerts(data.alerts || []);
+      } catch (err) {
+        alertsList.innerHTML = '<div class="alerts-error">Failed to load alerts: ' + err.message + '</div>';
+      }
+    }
+
+    function renderAlerts(alerts) {
+      if (!alerts.length) {
+        alertsList.innerHTML = '<div class="alerts-empty">No alerts recorded yet.</div>';
+        return;
+      }
+      alertsList.innerHTML = alerts.map(a => {
+        const imgPath = a.evidence_image.replace(/\\/g, '/');
+        const thumbUrl = '/alert-images/' + imgPath.split('/').pop();
+        return '<div class="alert-item">' +
+          '<img class="alert-thumb" src="' + thumbUrl + '" alt="Alert evidence" loading="lazy">' +
+          '<div class="alert-info">' +
+            '<div class="alert-time">' + new Date(a.timestamp).toLocaleString() + '</div>' +
+            '<div class="alert-confidence">Confidence: ' + a.max_conf.toFixed(2) + '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    // Initialize
+    loadAlerts();
+  </script>
+</body>
+</html>
