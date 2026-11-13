@@ -6,535 +6,926 @@
   <title>Weapon Detection</title>
   <style>
     :root {
-      --bg: #f2f2f0;
-      --fg: #1a1a1a;
-      --muted: #5a5a5a;
-      --accent: #2d5a8a;
-      --accent-hover: #1e406e;
-      --border: #c8c8c0;
-      --warning-bg: #f5e6a0;
-      --warning-fg: #5a4a00;
-      --warning-border: #d4b840;
-      --error-bg: #f8d7da;
-      --error-fg: #721c24;
-      --error-border: #f5c6cb;
-      --card-bg: #ffffff;
-      --input-bg: #ffffff;
+      --page-bg: #E4E1D8;
+      --panel-bg: #F5F3EC;
+      --text: #1B1B1B;
+      --muted: #55524B;
+      --lines: #B9B3A4;
+      --navy: #14283F;
+      --navy-text: #F5F3EC;
+      --steel: #1F4E79;
+      --steel-text: #F5F3EC;
+      --amber: #7A4A00;
+      --amber-text: #F5F3EC;
+      --alert-red: #A32020;
+      --alert-text: #F5F3EC;
+      --slate: #1F262E;
+          --slate-text: #F5F3EC;
     }
+
+    @media (prefers-reduced-motion: reduce) {
+          * { animation: none !important; }
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background: var(--bg);
-      color: var(--fg);
+      font-family: "Segoe UI", system-ui, Arial, sans-serif;
+      background: var(--page-bg);
+      color: var(--text);
       line-height: 1.5;
+      font-size: 17px;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
-    .container {
+
+    /* Skip link for accessibility */
+    .skip-link {
+      position: absolute;
+      top: -100%;
+      left: 16px;
+      background: var(--navy);
+      color: var(--navy-text);
+      padding: 8px 16px;
+      z-index: 100;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .skip-link:focus { top: 16px; }
+
+    /* Navy header band */
+    header {
+      background: var(--navy);
+      color: var(--navy-text);
+      padding: 24px 24px;
       width: 100%;
-      max-width: 900px;
+    }
+    .header-inner {
+      max-width: 1400px;
       margin: 0 auto;
-      padding: 24px 16px;
-      flex: 1;
     }
-    /* Warning banner */
-    .warning-banner {
-      background: var(--warning-bg);
-      border: 1px solid var(--warning-border);
-      color: var(--warning-fg);
-      padding: 16px;
-      margin-bottom: 24px;
-      font-weight: 600;
-      font-size: 14px;
-      text-align: center;
+    .project-name {
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 4px;
     }
-    /* Title */
-    h1 {
-      font-size: 24px;
-      font-weight: 600;
+    .project-desc {
+      font-size: 17px;
+      opacity: 0.9;
       margin-bottom: 8px;
-      color: var(--fg);
     }
-    .subtitle {
-      color: var(--muted);
-      font-size: 14px;
-      margin-bottom: 24px;
+    .legal-link {
+      color: var(--navy-text);
+      text-decoration: underline;
+      font-size: 15px;
     }
-    /* Upload area */
-    .upload-area {
-      border: 2px dashed var(--border);
-      background: var(--input-bg);
-      padding: 32px;
-      text-align: center;
-      cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
-      margin-bottom: 16px;
-    }
-    .upload-area:hover, .upload-area.drag-over {
-      border-color: var(--accent);
-      background: #fafafa;
-    }
-    .upload-area input[type="file"] {
-      display: none;
-    }
-    .upload-icon {
-      width: 48px;
-      height: 48px;
-      margin: 0 auto 12px;
-      stroke: var(--muted);
-    }
-    .upload-text {
-      font-size: 14px;
-      color: var(--muted);
-    }
-    .upload-text strong {
-      color: var(--fg);
-    }
-    .file-name {
-      margin-top: 8px;
-      font-size: 13px;
-      color: var(--fg);
-      font-weight: 500;
-    }
-    /* Controls */
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      align-items: flex-end;
-      margin-bottom: 24px;
-    }
-    .control-group {
-      flex: 1;
-      min-width: 180px;
-    }
-    .control-group label {
-      display: block;
-      font-size: 13px;
-      font-weight: 500;
-      margin-bottom: 6px;
-      color: var(--fg);
-    }
-    .control-group input[type="range"] {
+    .legal-link:focus { opacity: 0.8; }
+
+    /* Permanent notice band */
+    .notice-band {
+      background: var(--amber);
+      color: var(--amber-text);
+      padding: 12px 24px;
       width: 100%;
-      accent-color: var(--accent);
-    }
-    .confidence-value {
-      font-size: 13px;
-      color: var(--muted);
-      margin-top: 4px;
-    }
-    .btn {
-      padding: 10px 20px;
-      font-size: 14px;
-      font-weight: 500;
-      border: none;
-      cursor: pointer;
-      background: var(--accent);
-      color: #fff;
-      transition: background 0.15s;
-      min-width: 120px;
-    }
-    .btn:hover:not(:disabled) {
-      background: var(--accent-hover);
-    }
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    .btn-secondary {
-      background: var(--border);
-      color: var(--fg);
-    }
-    .btn-secondary:hover:not(:disabled) {
-      background: #b8b8b0;
-    }
-    /* Loading */
-    .loading {
-      display: none;
-      align-items: center;
-      gap: 12px;
-      color: var(--muted);
-      font-size: 14px;
-      margin-bottom: 16px;
-    }
-    .loading.show { display: flex; }
-    .spinner {
-      width: 20px;
-      height: 20px;
-      border: 2px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    /* Results */
-    .results {
-      display: none;
-      flex-direction: column;
-      gap: 16px;
-    }
-    .results.show { display: flex; }
-    .result-image {
-      width: 100%;
-      max-width: 100%;
-      height: auto;
-      border: 1px solid var(--border);
-      background: #fff;
-    }
-    .detections-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-    }
-    .detections-table th,
-    .detections-table td {
-      padding: 10px 12px;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-    }
-    .detections-table th {
-      background: #fafafa;
-      font-weight: 600;
-      color: var(--fg);
-    }
-    .detections-table tr:last-child td {
-      border-bottom: none;
-    }
-    .detections-table td.confidence {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    }
-    .inference-time {
-      font-size: 13px;
-      color: var(--muted);
-    }
-    .inference-time strong {
-      color: var(--fg);
-    }
-    .no-detections {
-      padding: 16px;
-      text-align: center;
-      color: var(--muted);
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-    }
-    /* Error message */
-    .error-message {
-      display: none;
-      background: var(--error-bg);
-      border: 1px solid var(--error-border);
-      color: var(--error-fg);
-      padding: 12px 16px;
-      margin-bottom: 16px;
-      font-size: 13px;
-    }
-    .error-message.show { display: block; }
-    /* Recent alerts panel */
-    .alerts-panel {
-      margin-top: 32px;
-      padding-top: 24px;
-      border-top: 1px solid var(--border);
-    }
-    .alerts-panel h2 {
+      font-weight: 700;
       font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 12px;
+      text-align: center;
     }
-    .alerts-list {
+
+    /* Main content area */
+    main {
+      flex: 1;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px;
       display: grid;
-      gap: 8px;
+      grid-template-columns: 380px 1fr;
+      gap: 24px;
+      align-items: start;
     }
-    .alert-item {
+
+    /* Panels */
+    .panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--lines);
+      padding: 16px;
+    }
+    .panel-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--lines);
+    }
+
+    /* Tabs */
+    .tabs {
       display: flex;
-      gap: 12px;
-      padding: 12px;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
+      gap: 4px;
+      margin-bottom: 16px;
+    }
+    .tab {
+      flex: 1;
+      background: transparent;
+      border: 1px solid var(--lines);
+      border-bottom: none;
+      padding: 10px 12px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .tab.active {
+      background: var(--panel-bg);
+      color: var(--text);
+      border-color: var(--lines);
+    }
+    .tab:focus { outline: 2px solid var(--steel); outline-offset: -2px; }
+
+    /* Controls */
+    .control-group {
+      margin-bottom: 16px;
+    }
+    .control-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+    .control-label small { font-weight: 400; color: var(--muted); }
+
+    /* Drop zone */
+    .drop-zone {
+      border: 1px solid var(--lines);
+      background: var(--panel-bg);
+      padding: 24px 16px;
+      text-align: center;
+      cursor: pointer;
+    }
+    .drop-zone.dragover {
+      border-color: var(--steel);
+      background: #EDEAE0;
+    }
+    .drop-zone:focus { outline: 2px solid var(--steel); outline-offset: -2px; }
+    .drop-zone-text { color: var(--muted); font-size: 14px; }
+    .file-name { margin-top: 8px; font-size: 13px; color: var(--text); word-break: break-all; }
+
+    /* Slider */
+    .slider-row { display: flex; align-items: center; gap: 12px; }
+    input[type="range"] {
+      flex: 1;
+      accent-color: var(--steel);
+    }
+    .slider-value {
+      font-variant-numeric: tabular-nums;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      min-width: 44px;
+      text-align: right;
+    }
+
+    /* Number inputs for M and N */
+    .number-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    input[type="number"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--lines);
+      background: var(--panel-bg);
+      color: var(--text);
+      font-size: 15px;
+      font-variant-numeric: tabular-nums;
+    }
+    input[type="number"]:focus { outline: 2px solid var(--steel); outline-offset: -2px; border-color: var(--steel); }
+
+    /* Buttons */
+    .btn {
+      width: 100%;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 2px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      min-height: 44px;
+    }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn:focus { outline: 2px solid var(--steel); outline-offset: 2px; }
+    .btn-primary { background: var(--steel); color: var(--steel-text); }
+    .btn-secondary { background: var(--lines); color: var(--text); }
+    .btn-danger { background: var(--alert-red); color: var(--alert-text); }
+
+    /* Progress bar */
+    .progress-container { display: none; margin-top: 12px; }
+    .progress-container.visible { display: block; }
+    .progress-bar {
+      height: 6px;
+      background: var(--lines);
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--steel);
+    }
+    .progress-text { font-size: 13px; color: var(--muted); margin-top: 4px; text-align: center; }
+
+    /* Error message */
+    .error-msg { display: none; color: var(--alert-red); font-size: 14px; margin-top: 8px; font-weight: 500; }
+    .error-msg.visible { display: block; }
+
+    /* FPS display */
+    .fps-display { font-size: 14px; color: var(--muted); margin-top: 8px; }
+
+    /* Alert confirmation counter */
+    .confirm-counter { display: none; font-size: 14px; color: var(--muted); margin-top: 8px; font-family: monospace; }
+    .confirm-counter.visible { display: block; }
+    .confirm-counter.alert-pending { color: var(--alert-red); font-weight: 700; }
+
+    /* Result panel */
+    .result-panel { display: flex; flex-direction: column; gap: 16px; }
+    .result-viewport {
+      background: var(--slate);
+      min-height: 520px;
+      display: flex;
       align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .result-image, .result-canvas {
+      max-width: 100%;
+      max-height: 520px;
+      object-fit: contain;
+    }
+    .result-placeholder { color: var(--slate-text); font-size: 15px; text-align: center; padding: 24px; }
+
+    /* Tables */
+    .table-container { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--lines); }
+    th { font-weight: 700; color: var(--text); background: var(--panel-bg); }
+    td { color: var(--text); }
+    td.num { font-variant-numeric: tabular-nums; text-align: right; font-family: monospace; }
+    .table-empty { text-align: center; color: var(--muted); padding: 24px; }
+
+    /* Alert state banner */
+    .alert-banner { display: none; background: var(--alert-red); color: var(--alert-text); padding: 16px 24px; font-weight: 700; font-size: 16px; text-align: center; border-radius: 2px; }
+    .alert-banner.visible { display: block; }
+
+    /* Inference time */
+    .inference-time { font-size: 14px; color: var(--muted); }
+
+    /* Recent alerts panel */
+    .alerts-panel { margin-top: 24px; }
+    .alerts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    .alert-card {
+      border: 1px solid var(--lines);
+      background: var(--panel-bg);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
     .alert-thumb {
-      width: 80px;
-      height: 60px;
+      width: 100%;
+      aspect-ratio: 4/3;
       object-fit: cover;
-      border: 1px solid var(--border);
-      background: #f5f5f5;
-      flex-shrink: 0;
+      background: var(--slate);
     }
-    .alert-info {
-      flex: 1;
-      min-width: 0;
+    .alert-time { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+    .alert-conf { font-size: 14px; font-weight: 600; color: var(--text); }
+    .alert-source { font-size: 12px; color: var(--muted); }
+    .alerts-empty { grid-column: 1 / -1; text-align: center; color: var(--muted); padding: 24px; font-size: 14px; }
+
+    /* Footer */
+    footer {
+      background: var(--navy);
+      color: var(--navy-text);
+      padding: 16px 24px;
+      width: 100%;
+      margin-top: auto;
     }
-    .alert-time {
-      font-size: 12px;
-      color: var(--muted);
-    }
-    .alert-confidence {
+    .footer-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 16px;
       font-size: 13px;
-      font-weight: 500;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      opacity: 0.85;
     }
-    .alerts-empty {
-      padding: 16px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 13px;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
+    .footer-links a { color: var(--navy-text); text-decoration: underline; margin-left: 16px; }
+    
+
+    /* Responsive */
+    @media (max-width: 1100px) {
+      main { grid-template-columns: 1fr; padding: 16px; }
+      .controls-panel { position: sticky; top: 16px; }
     }
-    .alerts-error {
-      padding: 12px;
-      background: var(--error-bg);
-      border: 1px solid var(--error-border);
-      color: var(--error-fg);
-      font-size: 13px;
+    @media (max-width: 600px) {
+      header { padding: 16px; }
+      .notice-band { padding: 10px 16px; font-size: 14px; }
+      .project-name { font-size: 22px; }
+      .project-desc { font-size: 15px; }
+      main { padding: 12px; gap: 16px; }
+      .result-viewport { min-height: 360px; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Warning Banner -->
-    <div class="warning-banner" role="alert">
-      AI-generated detection. Not proof that a weapon is present. A human must review every alert.
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header>
+    <div class="header-inner">
+      <div class="project-name">Weapon Detection</div>
+      <div class="project-desc">AI-based decision support for weapon detection. Not proof.</div>
+      <a href="legal.html" class="legal-link">Terms of use and Privacy notice</a>
     </div>
+  </header>
 
-    <!-- Title -->
-    <h1>Weapon Detection</h1>
-    <p class="subtitle">Upload an image to run detection. Adjust the confidence threshold if needed.</p>
-
-    <!-- Upload Area -->
-    <div class="upload-area" id="uploadArea" tabindex="0" role="button" aria-label="Upload image">
-      <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-        <polyline points="17 8 12 3 7 8"/>
-        <line x1="12" y1="3" x2="12" y2="15"/>
-      </svg>
-      <p class="upload-text">Drag & drop or <strong>click to select</strong> an image (.jpg, .jpeg, .png, max 10 MB)</p>
-      <input type="file" id="fileInput" accept=".jpg,.jpeg,.png" aria-label="Select image file">
-      <p class="file-name" id="fileName" aria-live="polite"></p>
-    </div>
-
-    <!-- Controls -->
-    <div class="controls">
-      <div class="control-group">
-        <label for="confidence">Confidence threshold</label>
-        <input type="range" id="confidence" min="0.05" max="0.90" step="0.05" value="0.35">
-        <p class="confidence-value" id="confidenceValue">0.35</p>
-      </div>
-      <button class="btn" id="detectBtn" disabled>Detect</button>
-      <button class="btn btn-secondary" id="clearBtn" disabled>Clear</button>
-    </div>
-
-    <!-- Loading -->
-    <div class="loading" id="loading" aria-live="polite">
-      <div class="spinner" aria-hidden="true"></div>
-      <span>Running detection...</span>
-    </div>
-
-    <!-- Error -->
-    <div class="error-message" id="errorMessage" role="alert" aria-live="assertive"></div>
-
-    <!-- Results -->
-    <div class="results" id="results" aria-live="polite">
-      <img class="result-image" id="resultImage" alt="Annotated detection result">
-      <div id="detectionsContainer">
-        <!-- Table or no-detections message injected here -->
-      </div>
-      <p class="inference-time" id="inferenceTime"><strong>Inference time:</strong> <span id="inferenceValue"></span> ms</p>
-    </div>
-
-    <!-- Recent Alerts Panel -->
-    <section class="alerts-panel" aria-labelledby="alertsTitle">
-      <h2 id="alertsTitle">Recent Alerts</h2>
-      <div class="alerts-list" id="alertsList">
-        <div class="alerts-empty">Loading alerts...</div>
-      </div>
-    </section>
+  <div class="notice-band">
+    AI-generated detection. Not proof that a weapon is present. A human must review every alert.
   </div>
 
-  <script>
-    // DOM elements
-    const uploadArea = document.getElementById('uploadArea');
-    const fileInput = document.getElementById('fileInput');
-    const fileName = document.getElementById('fileName');
-    const confidenceInput = document.getElementById('confidence');
-    const confidenceValue = document.getElementById('confidenceValue');
-    const detectBtn = document.getElementById('detectBtn');
-    const clearBtn = document.getElementById('clearBtn');
-    const loading = document.getElementById('loading');
-    const errorMessage = document.getElementById('errorMessage');
-    const results = document.getElementById('results');
-    const resultImage = document.getElementById('resultImage');
-    const detectionsContainer = document.getElementById('detectionsContainer');
-    const inferenceValue = document.getElementById('inferenceValue');
-    const alertsList = document.getElementById('alertsList');
+  <main id="main-content">
+    <!-- Controls Panel -->
+    <aside class="panel controls-panel">
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" data-tab="upload" role="tab" aria-selected="true">Image upload</button>
+        <button class="tab" data-tab="camera" role="tab" aria-selected="false">Live camera</button>
+      </div>
 
+      <!-- Upload Mode -->
+      <div class="tab-panel" id="panel-upload">
+        <div class="control-group">
+          <label class="control-label">Confidence threshold <small>(0.05–0.90)</small></label>
+          <div class="slider-row">
+            <input type="range" id="conf-threshold" min="0.05" max="0.90" step="0.05" value="0.35">
+            <span class="slider-value" id="conf-value">0.35</span>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">Image</label>
+          <div class="drop-zone" id="drop-zone" tabindex="0" role="button" aria-label="Drop zone for image upload">
+            <div class="drop-zone-text">Drop an image here or click to choose</div>
+            <input type="file" id="file-input" accept=".jpg,.jpeg,.png" hidden>
+            <div class="file-name" id="file-name"></div>
+          </div>
+        </div>
+
+        <div class="progress-container" id="progress-container">
+          <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+          <div class="progress-text" id="progress-text">Running detection...</div>
+        </div>
+
+        <div class="error-msg" id="error-msg"></div>
+
+        <button class="btn btn-primary" id="btn-detect" disabled>Detect</button>
+        <button class="btn btn-secondary" id="btn-clear" style="margin-top: 8px;">Clear</button>
+      </div>
+
+      <!-- Camera Mode -->
+      <div class="tab-panel" id="panel-camera" hidden>
+        <div class="control-group">
+          <label class="control-label">Confidence threshold <small>(0.05–0.90)</small></label>
+          <div class="slider-row">
+            <input type="range" id="conf-threshold-cam" min="0.05" max="0.90" step="0.05" value="0.35">
+            <span class="slider-value" id="conf-value-cam">0.35</span>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">Multi-frame confirmation</label>
+          <div class="number-inputs">
+            <div>
+              <label class="control-label" style="font-size: 13px; margin-bottom: 4px;">M (window frames)</label>
+              <input type="number" id="param-m" min="1" max="60" value="15" step="1">
+            </div>
+            <div>
+              <label class="control-label" style="font-size: 13px; margin-bottom: 4px;">N (required)</label>
+              <input type="number" id="param-n" min="1" max="60" value="8" step="1">
+            </div>
+          </div>
+        </div>
+
+        <div class="confirm-counter" id="confirm-counter"></div>
+
+        <div class="error-msg" id="error-msg-cam"></div>
+
+        <button class="btn btn-primary" id="btn-start-cam">Start camera</button>
+        <button class="btn btn-danger" id="btn-stop-cam" style="margin-top: 8px;" hidden>Stop camera</button>
+
+        <div class="fps-display" id="fps-display"></div>
+      </div>
+    </aside>
+
+    <!-- Result Panel -->
+    <section class="result-panel">
+      <div class="alert-banner" id="alert-banner" role="alert"></div>
+
+      <div class="result-viewport" id="result-viewport">
+        <div class="result-placeholder">No image loaded. Select an image or start the camera.</div>
+      </div>
+
+      <div class="inference-time" id="inference-time"></div>
+
+      <!-- Detections table -->
+      <div class="table-container" id="detections-container" hidden>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Confidence</th>
+              <th>Box (x1, y1, x2, y2)</th>
+            </tr>
+          </thead>
+          <tbody id="detections-body"></tbody>
+        </table>
+      </div>
+
+      <div class="empty-state" id="empty-state" hidden>No weapon detected at this threshold. This does not prove that none is present.</div>
+    </section>
+  </main>
+
+  <!-- Recent Alerts Panel (full width below main) -->
+  <section class="panel alerts-panel" style="margin: 0 24px 24px; max-width: 1400px;">
+    <div class="panel-title">Recent alerts</div>
+    <div class="alerts-grid" id="alerts-grid"></div>
+  </section>
+
+  <footer>
+    <div class="footer-inner">
+      <div>Academic project</div>
+      <div class="footer-links">
+        <a href="legal.html">Terms of use and Privacy notice</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // --- State ---
+    let currentMode = 'upload'; // 'upload' or 'camera'
+    let videoStream = null;
+    let animationFrameId = null;
+    let lastFrameTime = 0;
+    let frameCount = 0;
+    let fps = 0;
+    let detectionHistory = []; // Array of arrays of boxes [{x1,y1,x2,y2,conf}, ...]
+    let alertCooldownUntil = 0;
+    let isProcessing = false;
+
+    // --- DOM Elements ---
+    const tabs = document.querySelectorAll('.tab');
+    const panelUpload = document.getElementById('panel-upload');
+    const panelCamera = document.getElementById('panel-camera');
+    const confThreshold = document.getElementById('conf-threshold');
+    const confValue = document.getElementById('conf-value');
+    const confThresholdCam = document.getElementById('conf-threshold-cam');
+    const confValueCam = document.getElementById('conf-value-cam');
+    const paramM = document.getElementById('param-m');
+    const paramN = document.getElementById('param-n');
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const fileName = document.getElementById('file-name');
+    const btnDetect = document.getElementById('btn-detect');
+    const btnClear = document.getElementById('btn-clear');
+    const btnStartCam = document.getElementById('btn-start-cam');
+    const btnStopCam = document.getElementById('btn-stop-cam');
+    const progressContainer = document.getElementById('progress-container');
+    const progressFill = document.getElementById('progress-fill');
+    const progressText = document.getElementById('progress-text');
+    const errorMsg = document.getElementById('error-msg');
+    const errorMsgCam = document.getElementById('error-msg-cam');
+    const confirmCounter = document.getElementById('confirm-counter');
+    const fpsDisplay = document.getElementById('fps-display');
+    const resultViewport = document.getElementById('result-viewport');
+    const inferenceTime = document.getElementById('inference-time');
+    const detectionsContainer = document.getElementById('detections-container');
+    const detectionsBody = document.getElementById('detections-body');
+    const emptyState = document.getElementById('empty-state');
+    const alertBanner = document.getElementById('alert-banner');
+    const alertsGrid = document.getElementById('alerts-grid');
+
+    // --- Utility Functions ---
+    function showError(el, msg) { el.textContent = msg; el.classList.add('visible'); }
+    function hideError(el) { el.classList.remove('visible'); el.textContent = ''; }
+    function showProgress(show) { progressContainer.classList.toggle('visible', show); }
+    function setProgress(pct) { progressFill.style.width = pct + '%'; }
+
+    function switchTab(mode) {
+      currentMode = mode;
+      tabs.forEach(t => {
+        const isActive = t.dataset.tab === mode;
+        t.classList.toggle('active', isActive);
+        t.setAttribute('aria-selected', isActive);
+      });
+      panelUpload.hidden = mode !== 'upload';
+      panelCamera.hidden = mode !== 'camera';
+      if (mode === 'camera') stopCamera();
+      clearResults();
+    }
+
+    function clearResults() {
+      resultViewport.innerHTML = '<div class="result-placeholder">No image loaded. Select an image or start the camera.</div>';
+      inferenceTime.textContent = '';
+      detectionsContainer.hidden = true;
+      detectionsBody.innerHTML = '';
+      emptyState.hidden = true;
+      alertBanner.classList.remove('visible');
+      alertBanner.textContent = '';
+      hideError(errorMsg);
+      hideError(errorMsgCam);
+      showProgress(false);
+    }
+
+    function showAlertBanner(msg) {
+      alertBanner.textContent = msg;
+      alertBanner.classList.add('visible');
+    }
+
+    // --- File handling ---
     let currentFile = null;
 
-    // Update confidence display
-    confidenceInput.addEventListener('input', () => {
-      confidenceValue.textContent = parseFloat(confidenceInput.value).toFixed(2);
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); } });
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file) handleFile(file);
     });
+    fileInput.addEventListener('change', (e) => { if (e.target.files[0]) handleFile(e.target.files[0]); });
 
-    // File selection
     function handleFile(file) {
-      if (!file) return;
       const validTypes = ['image/jpeg', 'image/png'];
       if (!validTypes.includes(file.type)) {
-        showError('Invalid file type. Please select a .jpg, .jpeg, or .png image.');
+        showError(errorMsg, 'Invalid file type. Allowed: .jpg, .jpeg, .png');
         return;
       }
       if (file.size > 10 * 1024 * 1024) {
-        showError('File too large. Maximum size is 10 MB.');
+        showError(errorMsg, 'File too large. Maximum size: 10 MB');
         return;
       }
       currentFile = file;
-      fileName.textContent = file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
-      detectBtn.disabled = false;
-      clearBtn.disabled = false;
-      hideError();
-      hideResults();
+      fileName.textContent = file.name;
+      btnDetect.disabled = false;
+      hideError(errorMsg);
+      clearResults();
     }
 
-    uploadArea.addEventListener('click', () => fileInput.click());
-    uploadArea.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        fileInput.click();
-      }
-    });
-    fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+    // --- Confidence sliders ---
+    confThreshold.addEventListener('input', () => { confValue.textContent = parseFloat(confThreshold.value).toFixed(2); });
+    confThresholdCam.addEventListener('input', () => { confValueCam.textContent = parseFloat(confThresholdCam.value).toFixed(2); });
 
-    // Drag and drop
-    uploadArea.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      uploadArea.classList.add('drag-over');
-    });
-    uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag-over'));
-    uploadArea.addEventListener('drop', (e) => {
-      e.preventDefault();
-      uploadArea.classList.remove('drag-over');
-      if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
-    });
-
-    // Clear
-    clearBtn.addEventListener('click', () => {
+    // --- Clear button ---
+    btnClear.addEventListener('click', () => {
       currentFile = null;
       fileInput.value = '';
       fileName.textContent = '';
-      detectBtn.disabled = true;
-      clearBtn.disabled = true;
-      hideError();
-      hideResults();
+      btnDetect.disabled = true;
+      confThreshold.value = '0.35';
+      confValue.textContent = '0.35';
+      clearResults();
     });
 
-    // Detect
-    detectBtn.addEventListener('click', async () => {
-      if (!currentFile) return;
-      hideError();
-      hideResults();
-      loading.classList.add('show');
-      detectBtn.disabled = true;
+    // --- Detect button (image upload) ---
+    btnDetect.addEventListener('click', async () => {
+      if (!currentFile || isProcessing) return;
+      isProcessing = true;
+      btnDetect.disabled = true;
+      showProgress(true);
+      setProgress(10);
+      hideError(errorMsg);
 
       const formData = new FormData();
       formData.append('file', currentFile);
-      const conf = parseFloat(confidenceInput.value);
+      const conf = parseFloat(confThreshold.value);
 
       try {
-        const response = await fetch('/predict?conf=' + conf, {
-          method: 'POST',
-          body: formData,
-        });
+        const response = await fetch('/predict?conf=' + conf, { method: 'POST', body: formData });
+        setProgress(50);
         const data = await response.json();
-        loading.classList.remove('show');
-        detectBtn.disabled = false;
+        setProgress(100);
 
         if (!response.ok) {
-          showError(data.detail || 'Detection failed');
+          showError(errorMsg, data.detail || 'Detection failed');
           return;
         }
-        showResults(data);
+
+        renderResult(data);
       } catch (err) {
-        loading.classList.remove('show');
-        detectBtn.disabled = false;
-        showError('Network error: ' + err.message);
+        showError(errorMsg, 'Request failed: ' + err.message);
+      } finally {
+        isProcessing = false;
+        btnDetect.disabled = false;
+        setTimeout(() => showProgress(false), 500);
       }
     });
 
-    // Show results
-    function showResults(data) {
-      // Annotated image
-      resultImage.src = 'data:image/jpeg;base64,' + data.annotated_image;
-      resultImage.alt = 'Detection result with ' + data.count + ' detection(s)';
-
-      // Detections table
-      if (data.detections.length === 0) {
-        detectionsContainer.innerHTML = '<div class="no-detections">No weapons detected above the confidence threshold.</div>';
-      } else {
-        let html = '<table class="detections-table"><thead><tr><th>#</th><th>Class</th><th>Confidence</th><th>Box [x1, y1, x2, y2]</th></tr></thead><tbody>';
-        data.detections.forEach((d, i) => {
-          const box = d.box.map(v => Math.round(v)).join(', ');
-          html += '<tr><td>' + (i + 1) + '</td><td>' + d.class_name + '</td><td class="confidence">' + d.confidence.toFixed(3) + '</td><td>[' + box + ']</td></tr>';
-        });
-        html += '</tbody></table>';
-        detectionsContainer.innerHTML = html;
-      }
+    function renderResult(data) {
+      // Image
+      const img = new Image();
+      img.src = 'data:image/jpeg;base64,' + data.annotated_image;
+      img.className = 'result-image';
+      img.alt = 'Detection result';
+      resultViewport.innerHTML = '';
+      resultViewport.appendChild(img);
 
       // Inference time
-      inferenceValue.textContent = data.inference_ms.toFixed(1);
+      inferenceTime.textContent = 'Inference time: ' + data.inference_ms.toFixed(1) + ' ms';
 
-      results.classList.add('show');
+      // Detections table
+      if (data.count > 0) {
+        detectionsContainer.hidden = false;
+        emptyState.hidden = true;
+        detectionsBody.innerHTML = data.detections.map((d, i) => `
+          <tr>
+            <td>${i + 1}</td>
+            <td class="num">${d.confidence.toFixed(3)}</td>
+            <td class="num">${d.box.map(v => v.toFixed(1)).join(', ')}</td>
+          </tr>
+        `).join('');
+      } else {
+        detectionsContainer.hidden = true;
+        emptyState.hidden = false;
+      }
     }
 
-    function hideResults() {
-      results.classList.remove('show');
-      resultImage.src = '';
-      detectionsContainer.innerHTML = '';
-      inferenceValue.textContent = '';
+    // --- Camera functions ---
+    async function startCamera() {
+      hideError(errorMsgCam);
+      btnStartCam.disabled = true;
+      btnStartCam.textContent = 'Starting...';
+
+      try {
+        videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } });
+      } catch (err) {
+        let msg = 'Camera access denied or unavailable.';
+        if (err.name === 'NotAllowedError') msg = 'Camera permission denied. Please allow camera access in browser settings.';
+        else if (err.name === 'NotFoundError') msg = 'No camera found on this device.';
+        else if (err.name === 'NotReadableError') msg = 'Camera is in use by another application.';
+        showError(errorMsgCam, msg);
+        btnStartCam.disabled = false;
+        btnStartCam.textContent = 'Start camera';
+        return;
+      }
+
+      // Create video element
+      const video = document.createElement('video');
+      video.srcObject = videoStream;
+      video.playsInline = true;
+      video.muted = true;
+      await video.play();
+
+      // Create canvas
+      const canvas = document.createElement('canvas');
+      canvas.className = 'result-canvas';
+      resultViewport.innerHTML = '';
+      resultViewport.appendChild(canvas);
+
+      const ctx = canvas.getContext('2d');
+
+      // Show stop button, hide start
+      btnStartCam.hidden = true;
+      btnStopCam.hidden = false;
+      btnStopCam.disabled = false;
+
+      // Reset detection history
+      detectionHistory = [];
+      alertCooldownUntil = 0;
+
+      // Start detection loop
+      lastFrameTime = performance.now();
+      frameCount = 0;
+      detectionLoop(video, canvas, ctx);
     }
 
-    function showError(msg) {
-      errorMessage.textContent = msg;
-      errorMessage.classList.add('show');
-    }
-    function hideError() {
-      errorMessage.classList.remove('show');
-      errorMessage.textContent = '';
+    function stopCamera() {
+      if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; }
+      if (videoStream) { videoStream.getTracks().forEach(t => t.stop()); videoStream = null; }
+      btnStartCam.hidden = false;
+      btnStartCam.disabled = false;
+      btnStartCam.textContent = 'Start camera';
+      btnStopCam.hidden = true;
+      fpsDisplay.textContent = '';
+      confirmCounter.classList.remove('visible', 'alert-pending');
+      clearResults();
     }
 
-    // Load recent alerts
+    btnStartCam.addEventListener('click', startCamera);
+    btnStopCam.addEventListener('click', stopCamera);
+
+    async function detectionLoop(video, canvas, ctx) {
+      if (!videoStream) return;
+
+      const now = performance.now();
+      frameCount++;
+      if (now - lastFrameTime >= 1000) {
+        fps = frameCount;
+        frameCount = 0;
+        lastFrameTime = now;
+        fpsDisplay.textContent = 'FPS: ' + fps;
+      }
+
+      // Only process if not already processing and ~400ms since last
+      if (isProcessing) {
+        animationFrameId = requestAnimationFrame(() => detectionLoop(video, canvas, ctx));
+        return;
+      }
+
+      isProcessing = true;
+
+      // Set canvas size to video size
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      // Draw video frame to canvas (for display)
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      // Prepare frame for inference: scale to 640px width, encode JPEG quality 0.8
+      const scale = 640 / canvas.width;
+      const inferWidth = 640;
+      const inferHeight = Math.round(canvas.height * scale);
+
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = inferWidth;
+      tempCanvas.height = inferHeight;
+      const tempCtx = tempCanvas.getContext('2d');
+      tempCtx.drawImage(canvas, 0, 0, inferWidth, inferHeight);
+
+      const blob = await new Promise(resolve => tempCanvas.toBlob(resolve, 'image/jpeg', 0.8));
+
+      // Send to /predict
+      const formData = new FormData();
+      formData.append('file', blob, 'frame.jpg');
+      const conf = parseFloat(confThresholdCam.value);
+
+      try {
+        const response = await fetch('/predict?conf=' + conf, { method: 'POST', body: formData });
+        const data = await response.json();
+
+        if (response.ok) {
+          // Draw detections on main canvas
+          drawDetections(ctx, data.detections, scale);
+
+          // Update multi-frame confirmation
+          updateConfirmation(data.detections);
+        }
+      } catch (err) {
+        console.error('Detection error:', err);
+      }
+
+      isProcessing = false;
+      animationFrameId = requestAnimationFrame(() => detectionLoop(video, canvas, ctx));
+    }
+
+    function drawDetections(ctx, detections, scale) {
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#A32020';
+      ctx.fillStyle = '#A32020';
+      ctx.font = '14px monospace';
+
+      for (const d of detections) {
+        // Scale boxes back to canvas size
+        const x1 = d.box[0] / scale;
+        const y1 = d.box[1] / scale;
+        const x2 = d.box[2] / scale;
+        const y2 = d.box[3] / scale;
+        const w = x2 - x1;
+        const h = y2 - y1;
+
+        ctx.strokeRect(x1, y1, w, h);
+        ctx.fillText(d.confidence.toFixed(2), x1, y1 > 18 ? y1 - 4 : y1 + h + 18);
+      }
+    }
+
+    function updateConfirmation(detections) {
+      const M = parseInt(paramM.value) || 15;
+      const N = parseInt(paramN.value) || 8;
+
+      // Convert detections to simple box format
+      const boxes = detections.map(d => ({
+        x1: d.box[0], y1: d.box[1], x2: d.box[2], y2: d.box[3], conf: d.confidence
+      }));
+
+      detectionHistory.push(boxes);
+      if (detectionHistory.length > M) detectionHistory.shift();
+
+      // For newest boxes, count overlaps in history
+      let maxOverlapCount = 0;
+      for (const newBox of boxes) {
+        let count = 0;
+        for (const frameBoxes of detectionHistory) {
+          for (const oldBox of frameBoxes) {
+            if (iou(newBox, oldBox) >= 0.2) { count++; break; }
+          }
+        }
+        maxOverlapCount = Math.max(maxOverlapCount, count);
+      }
+
+      confirmCounter.classList.add('visible');
+      confirmCounter.classList.remove('alert-pending');
+      confirmCounter.textContent = 'Confirmed in ' + maxOverlapCount + ' of the last ' + M + ' frames (need ' + N + ')';
+
+      // Check alert condition
+      const now = Date.now();
+      if (maxOverlapCount >= N && now >= alertCooldownUntil) {
+        // Trigger alert
+        confirmCounter.classList.add('alert-pending');
+        showAlertBanner('ALERT. Possible weapon in ' + N + ' of the last ' + M + ' frames. Human review required.');
+
+        // Send to /alerts/log
+        sendAlertLog(newBox, M, N);
+
+        // Keep alert banner for 5 seconds
+        setTimeout(() => {
+          alertBanner.classList.remove('visible');
+        }, 5000);
+
+        // Cooldown 5 seconds
+        alertCooldownUntil = now + 5000;
+      }
+    }
+
+    function iou(box1, box2) {
+      const x1 = Math.max(box1.x1, box2.x1);
+      const y1 = Math.max(box1.y1, box2.y1);
+      const x2 = Math.min(box1.x2, box2.x2);
+      const y2 = Math.min(box1.y2, box2.y2);
+      const inter = Math.max(0, x2 - x1) * Math.max(0, y2 - y1);
+      const area1 = (box1.x2 - box1.x1) * (box1.y2 - box1.y1);
+      const area2 = (box2.x2 - box2.x1) * (box2.y2 - box2.y1);
+      return inter / (area1 + area2 - inter);
+    }
+
+    async function sendAlertLog(triggerBox, M, N) {
+      // Get current canvas as blob
+      const canvas = resultViewport.querySelector('canvas');
+      if (!canvas) return;
+
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.8));
+      const formData = new FormData();
+      formData.append('file', blob, 'alert.jpg');
+      formData.append('max_conf', triggerBox.conf.toFixed(3));
+      formData.append('source', 'webcam');
+
+      try {
+        await fetch('/alerts/log', { method: 'POST', body: formData });
+        loadAlerts();
+      } catch (err) {
+        console.error('Failed to log alert:', err);
+      }
+    }
+
+    // --- Load recent alerts ---
     async function loadAlerts() {
       try {
-        const response = await fetch('/alerts?limit=10');
+        const response = await fetch('/alerts?limit=20');
         const data = await response.json();
         renderAlerts(data.alerts || []);
       } catch (err) {
-        alertsList.innerHTML = '<div class="alerts-error">Failed to load alerts: ' + err.message + '</div>';
+        alertsGrid.innerHTML = '<div class="alerts-empty">Failed to load alerts.</div>';
       }
     }
 
     function renderAlerts(alerts) {
       if (!alerts.length) {
-        alertsList.innerHTML = '<div class="alerts-empty">No alerts recorded yet.</div>';
+        alertsGrid.innerHTML = '<div class="alerts-empty">No alerts recorded yet.</div>';
         return;
       }
-      alertsList.innerHTML = alerts.map(a => {
-        const imgPath = a.evidence_image.replace(/\\/g, '/');
-        const thumbUrl = '/alert-images/' + imgPath.split('/').pop();
-        return '<div class="alert-item">' +
-          '<img class="alert-thumb" src="' + thumbUrl + '" alt="Alert evidence" loading="lazy">' +
-          '<div class="alert-info">' +
-            '<div class="alert-time">' + new Date(a.timestamp).toLocaleString() + '</div>' +
-            '<div class="alert-confidence">Confidence: ' + a.max_conf.toFixed(2) + '</div>' +
-          '</div>' +
-        '</div>';
+      alertsGrid.innerHTML = alerts.map(a => {
+        const thumbUrl = a.url || '/alert-images/' + a.evidence_image.split('/').pop();
+        return `
+          <div class="alert-card">
+            <img class="alert-thumb" src="${thumbUrl}" alt="Alert evidence" loading="lazy">
+            <div class="alert-time">${new Date(a.timestamp).toLocaleString()}</div>
+            <div class="alert-conf">Confidence: ${a.max_conf.toFixed(2)}</div>
+            <div class="alert-source">${a.source}</div>
+          </div>
+        `;
       }).join('');
     }
 
-    // Initialize
+    // --- Initialize ---
+    tabs.forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
     loadAlerts();
+    // Refresh alerts every 10 seconds
+    setInterval(loadAlerts, 10000);
   </script>
 </body>
 </html>

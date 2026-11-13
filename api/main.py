@@ -1,13 +1,16 @@
 """FastAPI application for weapon detection."""
 import base64
+import csv
 import io
 import time
 from contextlib import asynccontextmanager
+from datetime import datetime
 from pathlib import Path
+from threading import Lock
 
 import cv2
 import numpy as np
-from fastapi import FastAPI, File, HTTPException, Query, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, Query, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -24,12 +27,17 @@ from api.config import (
     MIN_CONFIDENCE,
     MODEL_PATH,
 )
-from api.schemas import Alert, AlertsResponse, Detection, HealthResponse, PredictResponse
+from api.schemas import Alert, AlertLogResponse, AlertsResponse, Detection, HealthResponse, PredictResponse
 
 
 # Global model instance
 model: YOLO | None = None
 device: str = "cpu"
+
+# Alert logging rate limit
+_last_alert_time: float = 0.0
+_alert_lock = Lock()
+_alert_counter = 0
 
 
 @asynccontextmanager
@@ -42,6 +50,12 @@ async def lifespan(app: FastAPI):
     model = YOLO(str(MODEL_PATH))
     model.to(device)
     print(f"Model loaded on {device}: {MODEL_PATH}")
+    
+    # Warm up: run one dummy inference to avoid cold start
+    dummy_img = np.zeros((640, 640, 3), dtype=np.uint8)
+    model.predict(dummy_img, imgsz=INFERENCE_IMG_SIZE, conf=DEFAULT_CONFIDENCE, verbose=False)
+    print("Model warmed up with dummy inference")
+    
     yield
     model = None
 
@@ -66,7 +80,7 @@ app.add_middleware(
 app.mount("/alert-images", StaticFiles(directory=str(ALERT_IMAGES_DIR)), name="alert-images")
 
 
-def validate_image_file(file: UploadFile) -> bytes:
+def validate_image_file(file: UploadFile) -> np.ndarray:
     """Validate and read uploaded image file."""
     # Check extension
     ext = Path(file.filename).suffix.lower()
@@ -155,8 +169,6 @@ async def get_alerts(limit: int = Query(20, ge=1, le=100)):
     if not ALERT_LOG_PATH.exists():
         return AlertsResponse(alerts=[])
     
-    import csv
-    
     alerts = []
     with open(ALERT_LOG_PATH, "r", newline="") as f:
         reader = csv.DictReader(f)
@@ -176,6 +188,63 @@ async def get_alerts(limit: int = Query(20, ge=1, le=100)):
     return AlertsResponse(alerts=alerts)
 
 
+@app.post("/alerts/log", response_model=AlertLogResponse)
+async def log_alert(
+    file: UploadFile = File(...),
+    max_conf: float = Form(...),
+    source: str = Form(...),
+):
+    """Log an alert with evidence image."""
+    global _last_alert_time, _alert_counter
+
+    # Rate limit: max 1 alert per 2 seconds
+    with _alert_lock:
+        now = time.time()
+        if now - _last_alert_time < 2.0:
+            raise HTTPException(
+                status_code=429,
+                detail="Rate limited: maximum one alert per 2 seconds",
+            )
+        _last_alert_time = now
+        _alert_counter += 1
+        counter = _alert_counter
+
+    # Validate and read image
+    img = validate_image_file(file)
+
+    # Generate unique filename
+    timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"alert_{timestamp_str}_{counter}.jpg"
+    filepath = ALERT_IMAGES_DIR / filename
+
+    # Save evidence image
+    cv2.imwrite(str(filepath), img)
+
+    # Prepare log row (same columns as alert_video.py)
+    timestamp = datetime.now().isoformat()
+    frame = 0  # Not applicable for API
+    video_time_s = 0.0  # Not applicable for API
+    evidence_image = f"alerts/images/{filename}"
+
+    # Append to CSV (write header if new)
+    file_exists = ALERT_LOG_PATH.exists()
+    with open(ALERT_LOG_PATH, "a", newline="") as f:
+        writer = csv.writer(f)
+        if not file_exists:
+            writer.writerow(["timestamp", "source", "frame", "video_time_s", "max_conf", "evidence_image"])
+        writer.writerow([timestamp, source, frame, video_time_s, max_conf, evidence_image])
+
+    return AlertLogResponse(
+        timestamp=timestamp,
+        source=source,
+        frame=frame,
+        video_time_s=video_time_s,
+        max_conf=max_conf,
+        evidence_image=evidence_image,
+        url=f"/alert-images/{filename}",
+    )
+
+
 # Serve frontend at root
 @app.get("/")
 async def root():
@@ -184,6 +253,15 @@ async def root():
     if frontend_path.exists():
         return FileResponse(frontend_path)
     return {"message": "Frontend not built yet. See /docs for API."}
+
+
+@app.get("/legal")
+async def legal():
+    """Serve the legal HTML page."""
+    legal_path = Path("frontend/legal.html")
+    if legal_path.exists():
+        return FileResponse(legal_path)
+    raise HTTPException(status_code=404, detail="Legal page not found")
 
 
 if __name__ == "__main__":

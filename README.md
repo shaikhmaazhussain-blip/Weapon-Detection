@@ -30,6 +30,23 @@ pip install -r requirements.txt
 - Frontend: http://127.0.0.1:8000/
 - Health check: http://127.0.0.1:8000/health
 
+## Run the Web Frontend
+
+```bash
+# Start the API server (serves frontend at /)
+.\venv\Scripts\python.exe -m uvicorn api.main:app --host 127.0.0.1 --port 8000
+```
+
+Then open http://127.0.0.1:8000/ in a browser.
+
+The frontend has two modes:
+- **Image upload**: Drag-and-drop or click to choose an image, adjust confidence, click Detect.
+- **Live camera**: Click "Start camera", allow camera access, view live detection with multi-frame confirmation.
+
+## Legal Page
+
+Open http://127.0.0.1:8000/legal (linked from the header) for Terms of use and Privacy notice.
+
 ## Run the Video/Webcam Detection (`alert_video.py`)
 
 ```bash
@@ -64,7 +81,8 @@ weapon-detection/
 │   ├── schemas.py         # Pydantic models
 │   └── main.py            # FastAPI application
 ├── frontend/
-│   └── index.html         # Single-page frontend
+│   ├── index.html         # Single-page frontend
+│   └── legal.html         # Terms of use and Privacy notice
 ├── tests/
 │   └── test_api.py        # API tests
 ├── alerts/
@@ -123,8 +141,9 @@ weapon-detection/
 
 - Misses guns in unusual poses or when small/hidden
 - False alarms on lookalike objects (phones, tools, etc.)
-- Multi-frame confirmation removes flicker but not steady lookalikes
-- Notification to authorized personnel is NOT implemented (alert log is the only record) — future work
+- Multi-frame confirmation removes flicker but not steady lookalikes (applies to both `alert_video.py` and the browser's JavaScript rule)
+- A steady lookalike object will still trigger alerts in both modes
+- Notification to authorized personnel is NOT implemented (alert log is the only record) - future work
 
 ## Architecture
 
@@ -133,10 +152,13 @@ flowchart LR
     Input[Input Image/Video] --> Pre[Preprocessing]
     Pre --> YOLO[YOLOv8 v3]
     YOLO --> Thresh[Confidence Threshold]
-    Thresh --> MultiFrame[Multi-Frame Confirmation]
-    MultiFrame --> Evidence[Evidence Image + Alert Log]
+    Thresh --> MultiFramePy[Multi-Frame Confirmation (Python)]
+    Thresh --> MultiFrameJS[Multi-Frame Confirmation (JavaScript)]
+    MultiFramePy --> Evidence[Evidence Image + Alert Log]
+    MultiFrameJS --> Evidence
     Evidence --> Web[Web Page /alerts]
     Evidence --> Video[Annotated Video Output]
+    Web --> Legal[Legal Page /legal]
 ```
 
 ## Git

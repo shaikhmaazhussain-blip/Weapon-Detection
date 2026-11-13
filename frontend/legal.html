@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terms of use and Privacy notice - Weapon Detection</title>
+  <style>
+    :root {
+      --page-bg: #E4E1D8;
+      --panel-bg: #F5F3EC;
+      --text: #1B1B1B;
+      --muted: #55524B;
+      --lines: #B9B3A4;
+      --navy: #14283F;
+      --navy-text: #F5F3EC;
+      --steel: #1F4E79;
+      --steel-text: #F5F3EC;
+      --amber: #7A4A00;
+      --amber-text: #F5F3EC;
+          --alert-red: #A32020;
+          --alert-text: #F5F3EC;
+          --slate: #1F262E;
+          --slate-text: #F5F3EC;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+          * { animation: none !important; }
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Segoe UI", system-ui, Arial, sans-serif;
+      background: var(--page-bg);
+      color: var(--text);
+      line-height: 1.6;
+      font-size: 17px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Skip link */
+    .skip-link {
+      position: absolute;
+      top: -100%;
+      left: 16px;
+      background: var(--navy);
+      color: var(--navy-text);
+      padding: 8px 16px;
+      z-index: 100;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .skip-link:focus { top: 16px; }
+
+    /* Navy header */
+    header {
+      background: var(--navy);
+      color: var(--navy-text);
+      padding: 24px;
+      width: 100%;
+    }
+    .header-inner {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .project-name { font-size: 28px; font-weight: 700; line-height: 1.2; margin-bottom: 4px; }
+    .project-desc { font-size: 17px; opacity: 0.9; }
+    .back-link { display: inline-block; margin-top: 12px; color: var(--navy-text); text-decoration: underline; font-size: 15px; }
+    .back-link:focus { opacity: 0.8; }
+
+    /* Notice band */
+    .notice-band {
+      background: var(--amber);
+      color: var(--amber-text);
+      padding: 12px 24px;
+      width: 100%;
+      font-weight: 700;
+      font-size: 16px;
+      text-align: center;
+    }
+
+    /* Main content */
+    main {
+      flex: 1;
+      max-width: 800px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+
+    .section { margin-bottom: 32px; }
+    .section-title { font-size: 22px; font-weight: 700; margin-bottom: 12px; color: var(--text); }
+    .subsection-title { font-size: 17px; font-weight: 700; margin: 20px 0 8px; color: var(--text); }
+
+    p { margin-bottom: 12px; color: var(--text); }
+    ul { margin: 8px 0 12px 24px; }
+    li { margin-bottom: 6px; }
+    a { color: var(--steel); text-decoration: underline; }
+
+    .highlight-box {
+      background: var(--panel-bg);
+      border: 1px solid var(--lines);
+      padding: 16px;
+      margin: 16px 0;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--navy);
+      color: var(--navy-text);
+      padding: 16px 24px;
+      width: 100%;
+      margin-top: auto;
+    }
+    .footer-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      font-size: 13px;
+      opacity: 0.85;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      header { padding: 16px; }
+      .project-name { font-size: 22px; }
+      main { padding: 20px 16px; }
+      .section-title { font-size: 19px; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header>
+    <div class="header-inner">
+      <div class="project-name">Weapon Detection</div>
+      <div class="project-desc">Terms of use and Privacy notice</div>
+      <a href="/" class="back-link">← Back to application</a>
+    </div>
+  </header>
+
+  <div class="notice-band">
+    AI-generated detection. Not proof that a weapon is present. A human must review every alert.
+  </div>
+
+  <main id="main-content">
+    <section class="section">
+      <h1 class="section-title">Terms of use</h1>
+      <p>This is an academic project, not a commercial service. It is provided for research and educational purposes only.</p>
+
+      <h2 class="subsection-title">No warranty</h2>
+      <p>The software is provided "as is" without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and noninfringement.</p>
+
+      <h2 class="subsection-title">Not for real security decisions</h2>
+      <p>This tool must not be used for real security, law enforcement, or safety-critical decisions. It is a decision-support prototype only. A human must review every alert before any action is taken.</p>
+
+      <h2 class="subsection-title">Uploaded content</h2>
+      <ul>
+        <li>Do not upload images of people without their informed consent.</li>
+        <li>Do not upload illegal content, including but not limited to child sexual abuse material, extreme violence, or content that violates applicable laws.</li>
+        <li>You are responsible for the content you upload.</li>
+      </ul>
+
+      <h2 class="subsection-title">Limitations</h2>
+      <ul>
+        <li>The model misses guns in unusual poses or when they are small or hidden.</li>
+        <li>The model gives false alarms on lookalike objects.</li>
+        <li>Multi-frame confirmation removes flicker but not a steady lookalike.</li>
+        <li>Notification to authorized personnel is not implemented; the alert log is the only record.</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h1 class="section-title">Privacy notice</h1>
+
+      <h2 class="subsection-title">Image upload mode</h2>
+      <p>Uploaded images are processed in memory and are not stored on the server. No copy of the uploaded file is written to disk. The image is decoded, passed to the model, and the annotated result is returned as a base64-encoded JPEG in the API response.</p>
+
+      <h2 class="subsection-title">Live camera mode</h2>
+      <p>In camera mode, the video stream stays on your computer. Frames are captured locally, scaled, encoded as JPEG, and sent to the local server (http://127.0.0.1:8000) for inference. No video data leaves your machine.</p>
+
+      <h2 class="subsection-title">Alert evidence</h2>
+      <p>An evidence image is saved to the server's <code>alerts/images/</code> directory only when an alert is raised (either by the multi-frame confirmation in the browser or by the <code>alert_video.py</code> script). The evidence image is saved alongside a row in <code>alerts/alert_log.csv</code> with the same columns: timestamp, source, frame, video_time_s, max_conf, evidence_image.</p>
+
+      <h2 class="subsection-title">No tracking</h2>
+      <ul>
+        <li>No cookies are set.</li>
+        <li>No analytics or telemetry are collected.</li>
+        <li>No external network requests are made by the frontend or the API.</li>
+        <li>All processing happens locally on your machine or your local network.</li>
+      </ul>
+
+      <h2 class="subsection-title">Data retention</h2>
+      <p>Alert logs and evidence images persist on the local filesystem until you delete them. You can remove the <code>alerts/</code> directory at any time.</p>
+    </section>
+
+    <section class="section">
+      <h1 class="section-title">Contact</h1>
+      <p>This is an academic project. For questions, contact the project maintainers through the repository.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      Academic project - Weapon Detection
+    </div>
+  </footer>
+</body>
+</html>

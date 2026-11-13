@@ -40,3 +40,14 @@ class HealthResponse(BaseModel):
     status: str
     model: str
     device: str
+
+
+class AlertLogResponse(BaseModel):
+    """Response for /alerts/log endpoint."""
+    timestamp: str
+    source: str
+    frame: int
+    video_time_s: float
+    max_conf: float
+    evidence_image: str
+    url: str
