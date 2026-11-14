@@ -19,6 +19,11 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
+**Note:** The `torch` and `torchvision` packages in `requirements.txt` are pinned to the CUDA 12.1 builds (`+cu121`). If you need to install them from the PyTorch index directly, use:
+```bash
+pip install torch==2.5.1+cu121 torchvision==0.20.1+cu121 --index-url https://download.pytorch.org/whl/cu121
+```
+
 ## Run the API
 
 ```bash

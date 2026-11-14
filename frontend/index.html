@@ -6,38 +6,52 @@
   <title>Weapon Detection</title>
   <style>
     :root {
-      --page-bg: #E4E1D8;
-      --panel-bg: #F5F3EC;
-      --text: #1B1B1B;
-      --muted: #55524B;
-      --lines: #B9B3A4;
-      --navy: #14283F;
-      --navy-text: #F5F3EC;
-      --steel: #1F4E79;
-      --steel-text: #F5F3EC;
-      --amber: #7A4A00;
-      --amber-text: #F5F3EC;
-      --alert-red: #A32020;
-      --alert-text: #F5F3EC;
-      --slate: #1F262E;
-          --slate-text: #F5F3EC;
+      --color-charcoal: #1E2026;
+      --color-charcoal-light: #2A2D34;
+      --color-forest: #2D5A3D;
+      --color-forest-light: #3A7A4F;
+      --color-forest-muted: #1F3D2A;
+      --color-slate: #F1F2F4;
+      --color-slate-dark: #E5E7EB;
+      --color-white: #FAFAFB;
+      --color-text: #1E2026;
+      --color-text-muted: #6B7280;
+      --color-border: #E7E9EE;
+      --color-alert: #C0392B;
+      --color-alert-bg: #FEF2F2;
+      --color-warning: #B45309;
+      --color-warning-bg: #FFFBEB;
+      --color-focus: #2D5A3D;
+      --font-sans: "Segoe UI", system-ui, Arial, sans-serif;
+      --spacing-xs: 8px;
+      --spacing-sm: 16px;
+      --spacing-md: 24px;
+      --spacing-lg: 40px;
+      --spacing-xl: 64px;
+      --radius-sm: 2px;
+      --panel-bg: var(--color-white);
+      --page-bg: var(--color-slate);
     }
 
     @media (prefers-reduced-motion: reduce) {
-          * { animation: none !important; }
+      *, *::before, *::after { animation: none !important; transition: none !important; }
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html { font-size: 16px; }
+
     body {
-      font-family: "Segoe UI", system-ui, Arial, sans-serif;
+      font-family: var(--font-sans);
       background: var(--page-bg);
-      color: var(--text);
-      line-height: 1.5;
-      font-size: 17px;
+      color: var(--color-text);
+      line-height: 1.6;
+      font-size: 1rem;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     /* Skip link for accessibility */
@@ -45,163 +59,223 @@
       position: absolute;
       top: -100%;
       left: 16px;
-      background: var(--navy);
-      color: var(--navy-text);
+      background: var(--color-charcoal);
+      color: var(--color-white);
       padding: 8px 16px;
       z-index: 100;
       text-decoration: none;
       font-weight: 600;
+      font-size: 0.875rem;
+      border-radius: 2px;
     }
     .skip-link:focus { top: 16px; }
 
-    /* Navy header band */
+    /* Header */
     header {
-      background: var(--navy);
-      color: var(--navy-text);
-      padding: 24px 24px;
+      background: var(--color-charcoal);
+      color: var(--color-white);
+      padding: var(--spacing-md) var(--spacing-lg);
       width: 100%;
     }
     .header-inner {
-      max-width: 1400px;
+      max-width: 1280px;
       margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--spacing-sm);
     }
     .project-name {
-      font-size: 28px;
+      font-size: 1.75rem;
       font-weight: 700;
       line-height: 1.2;
-      margin-bottom: 4px;
+      letter-spacing: -0.02em;
     }
     .project-desc {
-      font-size: 17px;
-      opacity: 0.9;
-      margin-bottom: 8px;
+      font-size: 0.9375rem;
+      opacity: 0.7;
+      margin-top: 2px;
+      font-weight: 400;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
     }
     .legal-link {
-      color: var(--navy-text);
+      color: var(--color-white);
       text-decoration: underline;
-      font-size: 15px;
+      font-size: 0.8125rem;
+      white-space: nowrap;
+      opacity: 0.8;
     }
-    .legal-link:focus { opacity: 0.8; }
+    /* .legal-link:hover { opacity: 1; } - removed per design restrictions */
+    .legal-link:focus { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+    .icon-btn {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: var(--color-white);
+      padding: 8px 12px;
+      border-radius: 2px;
+      font-size: 0.8125rem;
+      cursor: pointer;
+      min-width: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .icon-btn:focus { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+    /* .icon-btn:hover { background: rgba(255,255,255,0.05); } - removed per design restrictions */
 
     /* Permanent notice band */
     .notice-band {
-      background: var(--amber);
-      color: var(--amber-text);
-      padding: 12px 24px;
+      background: var(--color-warning-bg);
+      color: var(--color-warning);
+      padding: var(--spacing-xs) var(--spacing-lg);
       width: 100%;
-      font-weight: 700;
-      font-size: 16px;
+      font-weight: 600;
+      font-size: 0.9375rem;
       text-align: center;
+      border-bottom: 1px solid var(--color-border);
     }
 
-    /* Main content area */
+    /* Main content */
     main {
       flex: 1;
-      max-width: 1400px;
+      max-width: 1280px;
       width: 100%;
       margin: 0 auto;
-      padding: 24px;
+      padding: var(--spacing-lg) var(--spacing-md);
       display: grid;
-      grid-template-columns: 380px 1fr;
-      gap: 24px;
+      grid-template-columns: 360px 1fr;
+      gap: var(--spacing-lg);
       align-items: start;
     }
 
     /* Panels */
     .panel {
       background: var(--panel-bg);
-      border: 1px solid var(--lines);
-      padding: 16px;
+      border: 1px solid var(--color-border);
+      padding: var(--spacing-md);
+      border-radius: 2px;
     }
     .panel-title {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 12px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--lines);
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: var(--spacing-md);
+      padding-bottom: var(--spacing-xs);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--spacing-xs);
     }
+    .panel-title small { font-weight: 400; color: var(--color-text-muted); font-size: 0.75rem; }
 
     /* Tabs */
     .tabs {
       display: flex;
-      gap: 4px;
-      margin-bottom: 16px;
+      gap: 2px;
+      margin-bottom: var(--spacing-md);
+      background: var(--color-slate);
+      padding: 2px;
+      border-radius: 2px;
     }
     .tab {
       flex: 1;
       background: transparent;
-      border: 1px solid var(--lines);
-      border-bottom: none;
-      padding: 10px 12px;
-      font-size: 15px;
+      border: none;
+      padding: 10px 16px;
+      font-size: 0.875rem;
       font-weight: 600;
-      color: var(--muted);
+      color: var(--color-text-muted);
       cursor: pointer;
+      border-radius: 2px;
+      /* transition: background 0.1s, color 0.1s; - removed per design restrictions */
     }
     .tab.active {
       background: var(--panel-bg);
-      color: var(--text);
-      border-color: var(--lines);
+      color: var(--color-text);
+      /* box-shadow: 0 1px 2px rgba(0,0,0,0.04); - removed per design restrictions */
     }
-    .tab:focus { outline: 2px solid var(--steel); outline-offset: -2px; }
+    .tab:focus { outline: 2px solid var(--color-focus); outline-offset: 2px; }
 
     /* Controls */
-    .control-group {
-      margin-bottom: 16px;
-    }
+    .control-group { margin-bottom: var(--spacing-md); }
     .control-label {
       display: block;
-      font-size: 14px;
+      font-size: 0.8125rem;
       font-weight: 600;
       margin-bottom: 6px;
-      color: var(--text);
+      color: var(--color-text);
     }
-    .control-label small { font-weight: 400; color: var(--muted); }
+    .control-label small { font-weight: 400; color: var(--color-text-muted); }
 
     /* Drop zone */
     .drop-zone {
-      border: 1px solid var(--lines);
+      border: 2px dashed var(--color-border);
       background: var(--panel-bg);
-      padding: 24px 16px;
+      padding: var(--spacing-lg) var(--spacing-md);
       text-align: center;
       cursor: pointer;
+      border-radius: 2px;
+      /* transition: border-color 0.1s, background 0.1s; - removed per design restrictions */
     }
-    .drop-zone.dragover {
-      border-color: var(--steel);
-      background: #EDEAE0;
+    .drop-zone.dragover,
+    .drop-zone:focus-within {
+      border-color: var(--color-forest);
+      background: #F0F7F2;
     }
-    .drop-zone:focus { outline: 2px solid var(--steel); outline-offset: -2px; }
-    .drop-zone-text { color: var(--muted); font-size: 14px; }
-    .file-name { margin-top: 8px; font-size: 13px; color: var(--text); word-break: break-all; }
+    .drop-zone:focus { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+    .drop-zone-text { color: var(--color-text-muted); font-size: 0.875rem; }
+    .file-name { margin-top: 8px; font-size: 0.8125rem; color: var(--color-text); word-break: break-all; }
 
     /* Slider */
-    .slider-row { display: flex; align-items: center; gap: 12px; }
+    .slider-row { display: flex; align-items: center; gap: var(--spacing-sm); }
     input[type="range"] {
       flex: 1;
-      accent-color: var(--steel);
+      accent-color: var(--color-forest);
+      height: 4px;
     }
     .slider-value {
       font-variant-numeric: tabular-nums;
-      font-size: 15px;
+      font-size: 0.9375rem;
       font-weight: 600;
-      color: var(--text);
+      color: var(--color-text);
       min-width: 44px;
       text-align: right;
     }
 
-    /* Number inputs for M and N */
-    .number-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    /* Number inputs */
+    .number-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-sm); }
     input[type="number"] {
       width: 100%;
       padding: 10px 12px;
-      border: 1px solid var(--lines);
+      border: 1px solid var(--color-border);
       background: var(--panel-bg);
-      color: var(--text);
-      font-size: 15px;
+      color: var(--color-text);
+      font-size: 0.9375rem;
       font-variant-numeric: tabular-nums;
+      font-family: var(--font-sans);
+      border-radius: 2px;
     }
-    input[type="number"]:focus { outline: 2px solid var(--steel); outline-offset: -2px; border-color: var(--steel); }
+    input[type="number"]:focus { outline: 2px solid var(--color-focus); outline-offset: -2px; border-color: var(--color-focus); }
+
+    /* Select inputs */
+    select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--color-border);
+      background: var(--panel-bg);
+      color: var(--color-text);
+      font-size: 0.9375rem;
+      font-family: var(--font-sans);
+      border-radius: 2px;
+      cursor: pointer;
+    }
+    select:focus { outline: 2px solid var(--color-focus); outline-offset: -2px; border-color: var(--color-focus); }
 
     /* Buttons */
     .btn {
@@ -209,137 +283,257 @@
       padding: 12px 16px;
       border: none;
       border-radius: 2px;
-      font-size: 15px;
+      font-size: 0.875rem;
       font-weight: 600;
+      font-family: var(--font-sans);
       cursor: pointer;
       min-height: 44px;
     }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .btn:focus { outline: 2px solid var(--steel); outline-offset: 2px; }
-    .btn-primary { background: var(--steel); color: var(--steel-text); }
-    .btn-secondary { background: var(--lines); color: var(--text); }
-    .btn-danger { background: var(--alert-red); color: var(--alert-text); }
+    .btn:focus { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+    .btn-primary { background: var(--color-charcoal); color: var(--color-white); }
+    .btn-secondary { background: var(--color-slate-dark); color: var(--color-text); border: 1px solid var(--color-border); }
+    .btn-danger { background: var(--color-alert); color: var(--color-white); }
+    .btn-success { background: var(--color-forest); color: var(--color-white); }
+    .btn-small { padding: 8px 12px; font-size: 0.8125rem; min-height: 36px; }
+    .btn-icon { padding: 8px; min-width: 40px; }
+
+    .button-row { display: flex; gap: var(--spacing-xs); }
+    .button-row .btn { flex: 1; }
+
+    /* Preset buttons */
+    .preset-row { display: flex; gap: var(--spacing-xs); margin-top: var(--spacing-xs); }
+    .preset-row .btn { flex: 1; }
 
     /* Progress bar */
-    .progress-container { display: none; margin-top: 12px; }
+    .progress-container { display: none; margin-top: var(--spacing-sm); }
     .progress-container.visible { display: block; }
     .progress-bar {
-      height: 6px;
-      background: var(--lines);
+      height: 4px;
+      background: var(--color-slate-dark);
       overflow: hidden;
+      border-radius: 2px;
     }
     .progress-fill {
       height: 100%;
       width: 0%;
-      background: var(--steel);
+      background: var(--color-forest);
+      /* transition: width 0.15s linear; - removed per design restrictions */
     }
-    .progress-text { font-size: 13px; color: var(--muted); margin-top: 4px; text-align: center; }
+    .progress-text { font-size: 0.8125rem; color: var(--color-text-muted); margin-top: 6px; text-align: center; }
 
     /* Error message */
-    .error-msg { display: none; color: var(--alert-red); font-size: 14px; margin-top: 8px; font-weight: 500; }
+    .error-msg { display: none; color: var(--color-alert); font-size: 0.8125rem; margin-top: 6px; font-weight: 500; }
     .error-msg.visible { display: block; }
 
     /* FPS display */
-    .fps-display { font-size: 14px; color: var(--muted); margin-top: 8px; }
+    .fps-display { font-size: 0.8125rem; color: var(--color-text-muted); margin-top: 6px; font-variant-numeric: tabular-nums; font-family: monospace; }
 
-    /* Alert confirmation counter */
-    .confirm-counter { display: none; font-size: 14px; color: var(--muted); margin-top: 8px; font-family: monospace; }
+    /* Confirmation counter */
+    .confirm-counter { display: none; font-size: 0.8125rem; color: var(--color-text-muted); margin-top: 6px; font-family: monospace; }
     .confirm-counter.visible { display: block; }
-    .confirm-counter.alert-pending { color: var(--alert-red); font-weight: 700; }
+    .confirm-counter.alert-pending { color: var(--color-alert); font-weight: 700; }
 
     /* Result panel */
-    .result-panel { display: flex; flex-direction: column; gap: 16px; }
+    .result-panel { display: flex; flex-direction: column; gap: var(--spacing-md); }
+    .alert-banner {
+      display: none;
+      background: var(--color-alert);
+      color: var(--color-white);
+      padding: var(--spacing-md) var(--spacing-lg);
+      font-weight: 600;
+      font-size: 1rem;
+      text-align: center;
+      border-radius: 2px;
+    }
+    .alert-banner.visible { display: block; }
+
     .result-viewport {
-      background: var(--slate);
-      min-height: 520px;
+      background: var(--color-charcoal);
+      min-height: 500px;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
       position: relative;
+      border-radius: 2px;
     }
     .result-image, .result-canvas {
       max-width: 100%;
-      max-height: 520px;
+      max-height: 500px;
       object-fit: contain;
     }
-    .result-placeholder { color: var(--slate-text); font-size: 15px; text-align: center; padding: 24px; }
+    .result-placeholder { color: rgba(255,255,255,0.5); font-size: 1rem; text-align: center; padding: var(--spacing-lg); }
+    .result-viewport.fullscreen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; min-height: 100vh; border-radius: 0; background: var(--color-charcoal); }
 
     /* Tables */
     .table-container { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: 14px; }
-    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--lines); }
-    th { font-weight: 700; color: var(--text); background: var(--panel-bg); }
-    td { color: var(--text); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--color-border); }
+    th { font-weight: 600; color: var(--color-text); background: var(--panel-bg); position: sticky; top: 0; }
+    td { color: var(--color-text); }
     td.num { font-variant-numeric: tabular-nums; text-align: right; font-family: monospace; }
-    .table-empty { text-align: center; color: var(--muted); padding: 24px; }
-
-    /* Alert state banner */
-    .alert-banner { display: none; background: var(--alert-red); color: var(--alert-text); padding: 16px 24px; font-weight: 700; font-size: 16px; text-align: center; border-radius: 2px; }
-    .alert-banner.visible { display: block; }
+    .table-empty { text-align: center; color: var(--color-text-muted); padding: var(--spacing-lg); }
 
     /* Inference time */
-    .inference-time { font-size: 14px; color: var(--muted); }
+    .inference-time { font-size: 0.8125rem; color: var(--color-text-muted); font-variant-numeric: tabular-nums; }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      color: var(--color-text-muted);
+      padding: var(--spacing-lg);
+      font-size: 0.9375rem;
+    }
 
     /* Recent alerts panel */
-    .alerts-panel { margin-top: 24px; }
+    .alerts-panel { margin-top: var(--spacing-lg); }
+    .alerts-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-md); }
     .alerts-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 12px;
+      gap: var(--spacing-sm);
     }
     .alert-card {
-      border: 1px solid var(--lines);
+      border: 1px solid var(--color-border);
       background: var(--panel-bg);
-      padding: 12px;
+      padding: var(--spacing-sm);
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
+      border-radius: 2px;
     }
     .alert-thumb {
       width: 100%;
       aspect-ratio: 4/3;
       object-fit: cover;
-      background: var(--slate);
+      background: var(--color-charcoal);
+      border-radius: 2px;
     }
-    .alert-time { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
-    .alert-conf { font-size: 14px; font-weight: 600; color: var(--text); }
-    .alert-source { font-size: 12px; color: var(--muted); }
-    .alerts-empty { grid-column: 1 / -1; text-align: center; color: var(--muted); padding: 24px; font-size: 14px; }
+    .alert-time { font-size: 0.75rem; color: var(--color-text-muted); font-variant-numeric: tabular-nums; font-family: monospace; }
+    .alert-conf { font-size: 0.875rem; font-weight: 600; color: var(--color-text); }
+    .alert-source { font-size: 0.75rem; color: var(--color-text-muted); }
+    .alerts-empty { grid-column: 1 / -1; text-align: center; color: var(--color-text-muted); padding: var(--spacing-lg); font-size: 0.875rem; }
+
+    /* Settings Panel */
+    .settings-panel { margin-top: var(--spacing-lg); }
+    .settings-toggle {
+      background: var(--color-slate-dark);
+      color: var(--color-text);
+      border: 1px solid var(--color-border);
+      padding: 10px 16px;
+      border-radius: 2px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      font-family: var(--font-sans);
+      cursor: pointer;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .settings-toggle:focus { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+    .settings-content { display: none; margin-top: var(--spacing-md); padding-top: var(--spacing-md); border-top: 1px solid var(--color-border); }
+    .settings-content.visible { display: block; }
+    .setting-item { margin-bottom: var(--spacing-md); }
+    .setting-item:last-child { margin-bottom: 0; }
+    .setting-label { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 0.875rem; font-weight: 600; }
+    .setting-label input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--color-forest); cursor: pointer; }
+    .setting-row { display: flex; gap: var(--spacing-xs); align-items: center; flex-wrap: wrap; }
+    .setting-row > * { flex: 1; min-width: 120px; }
+
+    /* Detection History Panel */
+    .history-panel { margin-top: var(--spacing-lg); }
+    .history-list { display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto; }
+    .history-item {
+      background: var(--panel-bg);
+      border: 1px solid var(--color-border);
+      padding: 10px 12px;
+      border-radius: 2px;
+      font-size: 0.8125rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .history-time { color: var(--color-text-muted); font-variant-numeric: tabular-nums; font-family: monospace; }
+    .history-detections { color: var(--color-text); font-weight: 500; }
 
     /* Footer */
     footer {
-      background: var(--navy);
-      color: var(--navy-text);
-      padding: 16px 24px;
+      background: var(--color-charcoal);
+      color: rgba(255,255,255,0.7);
+      padding: var(--spacing-md) var(--spacing-lg);
       width: 100%;
       margin-top: auto;
     }
     .footer-inner {
-      max-width: 1400px;
+      max-width: 1280px;
       margin: 0 auto;
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
-      gap: 16px;
-      font-size: 13px;
-      opacity: 0.85;
+      gap: var(--spacing-sm);
+      font-size: 0.8125rem;
     }
-    .footer-links a { color: var(--navy-text); text-decoration: underline; margin-left: 16px; }
-    
+    .footer-links a { color: rgba(255,255,255,0.7); text-decoration: underline; margin-left: var(--spacing-sm); }
+    /* .footer-links a:hover { color: var(--color-white); } - removed per design restrictions */
+
+    /* Toast notifications */
+    .toast-container {
+      position: fixed;
+      bottom: var(--spacing-lg);
+      right: var(--spacing-lg);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-xs);
+    }
+    .toast {
+      background: var(--color-charcoal);
+      color: var(--color-white);
+      padding: 12px 20px;
+      border-radius: 2px;
+      font-size: 0.875rem;
+      max-width: 320px;
+      /* box-shadow: 0 4px 12px rgba(0,0,0,0.15); - removed per design restrictions */
+    }
+    .toast.success { background: #1E3A2E; }
+    .toast.error { background: #3A1E1E; }
+    .toast.info { background: #1E2A3A; }
+
+    /* Confidence chart */
+    #confidence-chart { background: var(--color-charcoal); border-radius: 2px; }
+
+    /* ROI status */
+    #roi-status { font-size: 0.75rem; color: var(--color-text-muted); margin-top: 6px; display: none; }
 
     /* Responsive */
-    @media (max-width: 1100px) {
-      main { grid-template-columns: 1fr; padding: 16px; }
-      .controls-panel { position: sticky; top: 16px; }
+    @media (max-width: 1024px) {
+      main { grid-template-columns: 1fr; padding: var(--spacing-md); }
+      .controls-panel { position: sticky; top: var(--spacing-md); }
+      header { padding: var(--spacing-md); }
+      .notice-band { padding: var(--spacing-xs) var(--spacing-md); }
     }
     @media (max-width: 600px) {
-      header { padding: 16px; }
-      .notice-band { padding: 10px 16px; font-size: 14px; }
-      .project-name { font-size: 22px; }
-      .project-desc { font-size: 15px; }
-      main { padding: 12px; gap: 16px; }
-      .result-viewport { min-height: 360px; }
+      header { padding: var(--spacing-md); }
+      .header-inner { flex-direction: column; align-items: flex-start; }
+      .header-actions { width: 100%; justify-content: space-between; }
+      .project-name { font-size: 1.5rem; }
+      .project-desc { font-size: 0.875rem; }
+      main { padding: var(--spacing-sm); gap: var(--spacing-md); }
+      .result-viewport { min-height: 340px; }
+      .result-image, .result-canvas { max-height: 340px; }
+      .alerts-grid { grid-template-columns: 1fr; }
+      .tabs { flex-direction: column; }
+      .tab { border-radius: 2px; }
+      .tab.active { box-shadow: none; border: 1px solid var(--color-forest); }
+    }
+
+    /* Print styles */
+    @media print {
+      header, .notice-band, footer, .tabs, .control-group, .btn, .alerts-panel, .settings-panel, .history-panel { display: none !important; }
+      main { grid-template-columns: 1fr; }
+      .result-viewport { min-height: auto; }
     }
   </style>
 </head>
@@ -348,9 +542,15 @@
 
   <header>
     <div class="header-inner">
-      <div class="project-name">Weapon Detection</div>
-      <div class="project-desc">AI-based decision support for weapon detection. Not proof.</div>
-      <a href="legal.html" class="legal-link">Terms of use and Privacy notice</a>
+      <div>
+        <div class="project-name">Weapon Detection</div>
+        <div class="project-desc">AI-based decision support for weapon detection. Not proof.</div>
+      </div>
+      <div class="header-actions">
+        <a href="legal.html" class="legal-link">Terms of use & Privacy</a>
+        <button class="icon-btn" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">Settings</button>
+        <button class="icon-btn" id="fullscreen-toggle" aria-label="Fullscreen camera view" title="Fullscreen camera view" hidden>Fullscreen</button>
+      </div>
     </div>
   </header>
 
@@ -374,6 +574,11 @@
           <div class="slider-row">
             <input type="range" id="conf-threshold" min="0.05" max="0.90" step="0.05" value="0.35">
             <span class="slider-value" id="conf-value">0.35</span>
+          </div>
+          <div class="preset-row">
+            <button class="btn btn-small btn-secondary" id="conf-preset-low" type="button">Low (0.15)</button>
+            <button class="btn btn-small btn-secondary" id="conf-preset-med" type="button">Med (0.35)</button>
+            <button class="btn btn-small btn-secondary" id="conf-preset-high" type="button">High (0.60)</button>
           </div>
         </div>
 
@@ -405,31 +610,152 @@
             <input type="range" id="conf-threshold-cam" min="0.05" max="0.90" step="0.05" value="0.35">
             <span class="slider-value" id="conf-value-cam">0.35</span>
           </div>
+          <div class="preset-row">
+            <button class="btn btn-small btn-secondary" id="conf-preset-low-cam" type="button">Low (0.15)</button>
+            <button class="btn btn-small btn-secondary" id="conf-preset-med-cam" type="button">Med (0.35)</button>
+            <button class="btn btn-small btn-secondary" id="conf-preset-high-cam" type="button">High (0.60)</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">Camera</label>
+          <select id="camera-select">
+            <option value="">Loading cameras...</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">Resolution</label>
+          <select id="resolution-select">
+            <option value="1280x720">1280 × 720 (HD)</option>
+            <option value="1920x1080" selected>1920 × 1080 (Full HD)</option>
+            <option value="640x480">640 × 480 (VGA)</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">Inference interval (ms)</label>
+          <input type="range" id="inference-interval" min="100" max="2000" step="100" value="400">
+          <span class="slider-value" id="inference-interval-value">400ms</span>
         </div>
 
         <div class="control-group">
           <label class="control-label">Multi-frame confirmation</label>
           <div class="number-inputs">
             <div>
-              <label class="control-label" style="font-size: 13px; margin-bottom: 4px;">M (window frames)</label>
+              <label class="control-label" style="font-size: 0.75rem; margin-bottom: 4px;">M (window frames)</label>
               <input type="number" id="param-m" min="1" max="60" value="15" step="1">
             </div>
             <div>
-              <label class="control-label" style="font-size: 13px; margin-bottom: 4px;">N (required)</label>
+              <label class="control-label" style="font-size: 0.75rem; margin-bottom: 4px;">N (required)</label>
               <input type="number" id="param-n" min="1" max="60" value="8" step="1">
             </div>
           </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">Region of Interest (optional)</label>
+          <div class="button-row">
+            <button class="btn btn-small btn-secondary" id="btn-set-roi" type="button">Set ROI</button>
+            <button class="btn btn-small btn-secondary" id="btn-clear-roi" type="button" disabled>Clear ROI</button>
+          </div>
+          <div id="roi-status"></div>
+        </div>
+
+        <!-- Confidence History Mini Chart -->
+        <div class="control-group">
+          <label class="control-label">Confidence history (last 30 frames)</label>
+          <canvas id="confidence-chart" width="320" height="80" style="width: 100%; height: 80px;"></canvas>
         </div>
 
         <div class="confirm-counter" id="confirm-counter"></div>
 
         <div class="error-msg" id="error-msg-cam"></div>
 
-        <button class="btn btn-primary" id="btn-start-cam">Start camera</button>
-        <button class="btn btn-danger" id="btn-stop-cam" style="margin-top: 8px;" hidden>Stop camera</button>
+        <div class="button-row">
+          <button class="btn btn-primary" id="btn-start-cam">Start camera</button>
+          <button class="btn btn-danger" id="btn-stop-cam" hidden>Stop camera</button>
+        </div>
 
         <div class="fps-display" id="fps-display"></div>
       </div>
+
+      <!-- Settings Panel -->
+      <section class="panel settings-panel">
+        <button class="settings-toggle" id="settings-toggle" aria-expanded="false">
+          <span>Settings</span>
+          <span id="settings-chevron">▼</span>
+        </button>
+        <div class="settings-content" id="settings-content">
+          <div class="setting-item">
+            <label class="setting-label">
+              <input type="checkbox" id="setting-sound-enabled" checked>
+              Enable sound alerts
+            </label>
+          </div>
+          <div class="setting-item">
+            <label class="setting-label">Alert sound</label>
+            <select id="setting-sound-select">
+              <option value="beep">Beep (short)</option>
+              <option value="siren">Siren (urgent)</option>
+              <option value="alert" selected>Alert tone</option>
+              <option value="chime">Chime (soft)</option>
+            </select>
+          </div>
+          <div class="setting-item">
+            <label class="setting-label">Volume</label>
+            <div class="setting-row">
+              <input type="range" id="setting-volume" min="0" max="1" step="0.1" value="0.5" style="flex: 1;">
+              <span id="volume-value" style="min-width: 40px; text-align: right;">50%</span>
+            </div>
+            <button class="btn btn-small btn-secondary" id="btn-test-sound" style="margin-top: 8px; width: 100%;">Test sound</button>
+          </div>
+          <div class="setting-item">
+            <label class="setting-label">
+              <input type="checkbox" id="setting-visual-alert" checked>
+              Visual alert banner
+            </label>
+          </div>
+          <div class="setting-item">
+            <label class="setting-label">Box style</label>
+            <select id="setting-box-style">
+              <option value="solid" selected>Solid outline</option>
+              <option value="dashed">Dashed outline</option>
+              <option value="filled">Filled with opacity</option>
+              <option value="corners">Corner markers only</option>
+            </select>
+          </div>
+          <div class="setting-item">
+            <label class="setting-label">
+              <input type="checkbox" id="setting-show-labels" checked>
+              Show confidence labels
+            </label>
+          </div>
+          <div class="setting-item">
+            <label class="setting-label">
+              <input type="checkbox" id="setting-auto-refresh" checked>
+              Auto-refresh alerts (10s)
+            </label>
+          </div>
+          <div class="setting-item">
+            <label class="setting-label">
+              <input type="checkbox" id="setting-save-screenshots">
+              Auto-save detection screenshots
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Detection History Panel -->
+      <section class="panel history-panel">
+        <div class="panel-title">
+          Detection history
+          <button class="btn btn-small btn-secondary" id="btn-clear-history" style="padding: 4px 8px; font-size: 0.75rem;">Clear</button>
+        </div>
+        <div class="history-list" id="history-list">
+          <div class="table-empty" style="padding: var(--spacing-sm); font-size: 0.8125rem;">No detections yet</div>
+        </div>
+      </section>
     </aside>
 
     <!-- Result Panel -->
@@ -460,32 +786,65 @@
     </section>
   </main>
 
-  <!-- Recent Alerts Panel (full width below main) -->
-  <section class="panel alerts-panel" style="margin: 0 24px 24px; max-width: 1400px;">
-    <div class="panel-title">Recent alerts</div>
+  <!-- Recent Alerts Panel -->
+  <section class="panel alerts-panel" style="margin: 0 var(--spacing-md) var(--spacing-lg); max-width: 1280px;">
+    <div class="alerts-header">
+      <div class="panel-title" style="margin: 0;">Recent alerts</div>
+      <div>
+        <button class="btn btn-small btn-secondary" id="btn-export-alerts">Export CSV</button>
+        <button class="btn btn-small btn-danger" id="btn-clear-alerts">Clear list (does not delete files)</button>
+      </div>
+    </div>
     <div class="alerts-grid" id="alerts-grid"></div>
   </section>
+
+  <!-- Toast container -->
+  <div class="toast-container" id="toast-container"></div>
 
   <footer>
     <div class="footer-inner">
       <div>Academic project</div>
       <div class="footer-links">
-        <a href="legal.html">Terms of use and Privacy notice</a>
+        <a href="legal.html">Terms of use & Privacy notice</a>
       </div>
     </div>
   </footer>
 
   <script>
     // --- State ---
-    let currentMode = 'upload'; // 'upload' or 'camera'
+    let currentMode = 'upload';
     let videoStream = null;
     let animationFrameId = null;
     let lastFrameTime = 0;
     let frameCount = 0;
     let fps = 0;
-    let detectionHistory = []; // Array of arrays of boxes [{x1,y1,x2,y2,conf}, ...]
+    let detectionHistory = [];
     let alertCooldownUntil = 0;
     let isProcessing = false;
+    let availableCameras = [];
+    let currentCameraIndex = 0;
+    let detectionHistoryLog = [];
+    let lastDetections = [];
+    let lastInferenceTime = 0;
+    let inferenceInterval = 400;
+    let roi = null;
+    let settingRoi = false;
+    let confidenceHistory = [];
+
+    let settings = {
+      soundEnabled: true,
+      soundType: 'alert',
+      volume: 0.5,
+      visualAlert: true,
+      boxStyle: 'solid',
+      showLabels: true,
+      autoRefresh: true,
+      saveScreenshots: false
+    };
+
+    let audioContext = null;
+    let sampleRate = null;
+    const soundBuffers = {};
 
     // --- DOM Elements ---
     const tabs = document.querySelectorAll('.tab');
@@ -518,12 +877,57 @@
     const emptyState = document.getElementById('empty-state');
     const alertBanner = document.getElementById('alert-banner');
     const alertsGrid = document.getElementById('alerts-grid');
+    const cameraSelect = document.getElementById('camera-select');
+    const resolutionSelect = document.getElementById('resolution-select');
+    const themeToggle = document.getElementById('theme-toggle');
+    const fullscreenToggle = document.getElementById('fullscreen-toggle');
+    const settingsToggle = document.getElementById('settings-toggle');
+    const settingsContent = document.getElementById('settings-content');
+    const settingsChevron = document.getElementById('settings-chevron');
+    const historyList = document.getElementById('history-list');
+    const toastContainer = document.getElementById('toast-container');
+    const btnExportAlerts = document.getElementById('btn-export-alerts');
+    const btnClearAlerts = document.getElementById('btn-clear-alerts');
+    const btnClearHistory = document.getElementById('btn-clear-history');
+
+    const settingSoundEnabled = document.getElementById('setting-sound-enabled');
+    const settingSoundSelect = document.getElementById('setting-sound-select');
+    const settingVolume = document.getElementById('setting-volume');
+    const volumeValue = document.getElementById('volume-value');
+    const settingVisualAlert = document.getElementById('setting-visual-alert');
+    const settingBoxStyle = document.getElementById('setting-box-style');
+    const settingShowLabels = document.getElementById('setting-show-labels');
+    const settingAutoRefresh = document.getElementById('setting-auto-refresh');
+    const settingSaveScreenshots = document.getElementById('setting-save-screenshots');
+    const btnTestSound = document.getElementById('btn-test-sound');
+
+    const confPresetLow = document.getElementById('conf-preset-low');
+    const confPresetMed = document.getElementById('conf-preset-med');
+    const confPresetHigh = document.getElementById('conf-preset-high');
+    const confPresetLowCam = document.getElementById('conf-preset-low-cam');
+    const confPresetMedCam = document.getElementById('conf-preset-med-cam');
+    const confPresetHighCam = document.getElementById('conf-preset-high-cam');
+
+    const inferenceIntervalSlider = document.getElementById('inference-interval');
+    const inferenceIntervalValue = document.getElementById('inference-interval-value');
+    const btnSetROI = document.getElementById('btn-set-roi');
+    const btnClearROI = document.getElementById('btn-clear-roi');
+    const roiStatus = document.getElementById('roi-status');
+    const confidenceChart = document.getElementById('confidence-chart');
 
     // --- Utility Functions ---
     function showError(el, msg) { el.textContent = msg; el.classList.add('visible'); }
     function hideError(el) { el.classList.remove('visible'); el.textContent = ''; }
     function showProgress(show) { progressContainer.classList.toggle('visible', show); }
     function setProgress(pct) { progressFill.style.width = pct + '%'; }
+
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      toastContainer.appendChild(toast);
+      setTimeout(() => toast.remove(), 4000);
+    }
 
     function switchTab(mode) {
       currentMode = mode;
@@ -536,6 +940,8 @@
       panelCamera.hidden = mode !== 'camera';
       if (mode === 'camera') stopCamera();
       clearResults();
+      fullscreenToggle.hidden = mode !== 'camera';
+      disableROISelection();
     }
 
     function clearResults() {
@@ -549,11 +955,200 @@
       hideError(errorMsg);
       hideError(errorMsgCam);
       showProgress(false);
+      lastDetections = [];
+      roi = null;
+      confidenceHistory = [];
+      if (confidenceChart) {
+        const ctx = confidenceChart.getContext('2d');
+        ctx.clearRect(0, 0, confidenceChart.width, confidenceChart.height);
+      }
+      btnClearROI.disabled = true;
+      roiStatus.textContent = '';
+      roiStatus.style.display = 'none';
     }
 
     function showAlertBanner(msg) {
+      if (!settings.visualAlert) return;
       alertBanner.textContent = msg;
       alertBanner.classList.add('visible');
+    }
+
+    // --- Settings Management ---
+    function loadSettings() {
+      try {
+        const stored = localStorage.getItem('weapon-detection-settings');
+        if (stored) { settings = { ...settings, ...JSON.parse(stored) }; }
+      } catch (e) { console.warn('Failed to load settings:', e); }
+      applySettings();
+    }
+
+    function saveSettings() {
+      try { localStorage.setItem('weapon-detection-settings', JSON.stringify(settings)); }
+      catch (e) { console.warn('Failed to save settings:', e); }
+    }
+
+    function applySettings() {
+      settingSoundEnabled.checked = settings.soundEnabled;
+      settingSoundSelect.value = settings.soundType;
+      settingVolume.value = settings.volume;
+      volumeValue.textContent = Math.round(settings.volume * 100) + '%';
+      settingVisualAlert.checked = settings.visualAlert;
+      settingBoxStyle.value = settings.boxStyle;
+      settingShowLabels.checked = settings.showLabels;
+      settingAutoRefresh.checked = settings.autoRefresh;
+      settingSaveScreenshots.checked = settings.saveScreenshots;
+    }
+
+    // --- Theme Management ---
+    function loadTheme() {
+      try {
+        const theme = localStorage.getItem('weapon-detection-theme');
+        if (theme === 'dark') {
+          document.body.classList.add('dark-theme');
+          themeToggle.textContent = 'Light';
+        }
+      } catch (e) {}
+    }
+
+    function toggleTheme() {
+      const isDark = document.body.classList.toggle('dark-theme');
+      themeToggle.textContent = isDark ? 'Light' : 'Dark';
+      localStorage.setItem('weapon-detection-theme', isDark ? 'dark' : 'light');
+    }
+
+    // --- Audio System ---
+    function initAudio() {
+      if (audioContext) return;
+      try {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        generateSounds();
+      } catch (e) { console.warn('Web Audio API not available:', e); }
+    }
+
+    function generateSounds() {
+      if (!audioContext) return;
+      sampleRate = audioContext.sampleRate;
+      soundBuffers.beep = createTone(880, 0.15, 'sine', 0.3);
+      soundBuffers.siren = createSiren();
+      soundBuffers.alert = createAlertTone();
+      soundBuffers.chime = createTone(523.25, 0.5, 'sine', 0.4, true);
+    }
+
+    function createTone(frequency, duration, type = 'sine', gain = 0.3, decay = false) {
+      const length = sampleRate * duration;
+      const buffer = audioContext.createBuffer(1, length, sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < length; i++) {
+        const t = i / sampleRate;
+        let value = 0;
+        if (type === 'sine') value = Math.sin(2 * Math.PI * frequency * t);
+        else if (type === 'square') value = Math.sign(Math.sin(2 * Math.PI * frequency * t));
+        if (decay) value *= Math.exp(-t * 3);
+        data[i] = value * gain;
+      }
+      return buffer;
+    }
+
+    function createSiren() {
+      const duration = 1.0;
+      const length = sampleRate * duration;
+      const buffer = audioContext.createBuffer(1, length, sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < length; i++) {
+        const t = i / sampleRate;
+        const freq = 440 + 440 * Math.sin(2 * Math.PI * 3 * t);
+        data[i] = Math.sin(2 * Math.PI * freq * t) * 0.3 * (1 - t / duration);
+      }
+      return buffer;
+    }
+
+    function createAlertTone() {
+      const duration = 0.8;
+      const length = sampleRate * duration;
+      const buffer = audioContext.createBuffer(1, length, sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < length; i++) {
+        const t = i / sampleRate;
+        const freq = t < 0.4 ? 880 : 660;
+        const env = Math.sin(Math.PI * t / duration);
+        data[i] = Math.sin(2 * Math.PI * freq * t) * 0.3 * env;
+      }
+      return buffer;
+    }
+
+    async function playSound(type) {
+      if (!settings.soundEnabled) return;
+      if (!audioContext) { initAudio(); if (!audioContext) return; }
+      if (audioContext.state === 'suspended') {
+        try { await audioContext.resume(); } catch (e) { console.warn('Failed to resume audio context:', e); }
+      }
+      let oscillatorParams;
+      switch (type) {
+        case 'beep': oscillatorParams = { type: 'sine', freq: 880, duration: 0.15, pattern: 'single' }; break;
+        case 'siren': oscillatorParams = { type: 'sine', freq: 440, duration: 1.0, pattern: 'siren' }; break;
+        case 'alert': oscillatorParams = { type: 'sine', freq: 880, duration: 0.8, pattern: 'alternating' }; break;
+        case 'chime': oscillatorParams = { type: 'sine', freq: 523.25, duration: 0.5, pattern: 'chime' }; break;
+        default: oscillatorParams = { type: 'sine', freq: 880, duration: 0.2, pattern: 'single' };
+      }
+      playOscillatorSound(oscillatorParams, settings.volume);
+    }
+
+    function playOscillatorSound(params, volume) {
+      if (!audioContext) return;
+      const { type, freq, duration, pattern } = params;
+      const now = audioContext.currentTime;
+      try {
+        if (pattern === 'single') {
+          const osc = audioContext.createOscillator();
+          const gain = audioContext.createGain();
+          osc.type = type; osc.frequency.value = freq;
+          gain.gain.value = volume * 0.3;
+          gain.gain.setValueAtTime(volume * 0.3, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+          osc.connect(gain); gain.connect(audioContext.destination);
+          osc.start(now); osc.stop(now + duration);
+        } else if (pattern === 'siren') {
+          const osc = audioContext.createOscillator();
+          const gain = audioContext.createGain();
+          osc.type = type;
+          gain.gain.value = volume * 0.3;
+          gain.gain.setValueAtTime(volume * 0.3, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+          osc.frequency.setValueAtTime(440, now);
+          osc.frequency.linearRampToValueAtTime(880, now + duration / 2);
+          osc.frequency.linearRampToValueAtTime(440, now + duration);
+          osc.connect(gain); gain.connect(audioContext.destination);
+          osc.start(now); osc.stop(now + duration);
+        } else if (pattern === 'alternating') {
+          const tone1Duration = duration * 0.5;
+          const tone2Start = now + tone1Duration;
+          const osc1 = audioContext.createOscillator();
+          const gain1 = audioContext.createGain();
+          osc1.type = type; osc1.frequency.value = 880;
+          gain1.gain.value = volume * 0.3;
+          gain1.gain.setValueAtTime(volume * 0.3, now);
+          gain1.gain.exponentialRampToValueAtTime(0.001, now + tone1Duration);
+          osc1.connect(gain1); gain1.connect(audioContext.destination);
+          osc1.start(now); osc1.stop(now + tone1Duration);
+          const osc2 = audioContext.createOscillator();
+          const gain2 = audioContext.createGain();
+          osc2.type = type; osc2.frequency.value = 660;
+          gain2.gain.value = volume * 0.3;
+          gain2.gain.setValueAtTime(volume * 0.3, tone2Start);
+          gain2.gain.exponentialRampToValueAtTime(0.001, tone2Start + tone1Duration);
+          osc2.connect(gain2); gain2.connect(audioContext.destination);
+          osc2.start(tone2Start); osc2.stop(tone2Start + tone1Duration);
+        } else if (pattern === 'chime') {
+          const osc = audioContext.createOscillator();
+          const gain = audioContext.createGain();
+          osc.type = type; osc.frequency.value = freq;
+          gain.gain.value = volume * 0.4;
+          gain.gain.setValueAtTime(volume * 0.4, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+          osc.connect(gain); gain.connect(audioContext.destination);
+          osc.start(now); osc.stop(now + duration);
+        }
+      } catch (e) { console.warn('Error playing oscillator sound:', e); }
     }
 
     // --- File handling ---
@@ -573,14 +1168,8 @@
 
     function handleFile(file) {
       const validTypes = ['image/jpeg', 'image/png'];
-      if (!validTypes.includes(file.type)) {
-        showError(errorMsg, 'Invalid file type. Allowed: .jpg, .jpeg, .png');
-        return;
-      }
-      if (file.size > 10 * 1024 * 1024) {
-        showError(errorMsg, 'File too large. Maximum size: 10 MB');
-        return;
-      }
+      if (!validTypes.includes(file.type)) { showError(errorMsg, 'Invalid file type. Allowed: .jpg, .jpeg, .png'); return; }
+      if (file.size > 10 * 1024 * 1024) { showError(errorMsg, 'File too large. Maximum size: 10 MB'); return; }
       currentFile = file;
       fileName.textContent = file.name;
       btnDetect.disabled = false;
@@ -592,139 +1181,253 @@
     confThreshold.addEventListener('input', () => { confValue.textContent = parseFloat(confThreshold.value).toFixed(2); });
     confThresholdCam.addEventListener('input', () => { confValueCam.textContent = parseFloat(confThresholdCam.value).toFixed(2); });
 
+    function setConfidencePreset(slider, valueEl, value) { slider.value = value; valueEl.textContent = value.toFixed(2); }
+    confPresetLow.addEventListener('click', () => setConfidencePreset(confThreshold, confValue, 0.15));
+    confPresetMed.addEventListener('click', () => setConfidencePreset(confThreshold, confValue, 0.35));
+    confPresetHigh.addEventListener('click', () => setConfidencePreset(confThreshold, confValue, 0.60));
+    confPresetLowCam.addEventListener('click', () => setConfidencePreset(confThresholdCam, confValueCam, 0.15));
+    confPresetMedCam.addEventListener('click', () => setConfidencePreset(confThresholdCam, confValueCam, 0.35));
+    confPresetHighCam.addEventListener('click', () => setConfidencePreset(confThresholdCam, confValueCam, 0.60));
+
+    inferenceIntervalSlider.addEventListener('input', () => {
+      inferenceInterval = parseInt(inferenceIntervalSlider.value);
+      inferenceIntervalValue.textContent = inferenceInterval + 'ms';
+    });
+
+    // --- ROI handling ---
+    let roiStart = null;
+
+    function enableROISelection() {
+      settingRoi = true;
+      btnSetROI.textContent = 'Setting ROI...';
+      btnSetROI.disabled = true;
+      btnClearROI.disabled = true;
+      roiStatus.textContent = 'Click and drag on the camera view to select ROI';
+      roiStatus.style.display = 'block';
+      const canvas = resultViewport.querySelector('canvas');
+      if (canvas) {
+        canvas.style.cursor = 'crosshair';
+        canvas.addEventListener('mousedown', roiMouseDown);
+        canvas.addEventListener('mousemove', roiMouseMove);
+        canvas.addEventListener('mouseup', roiMouseUp);
+        canvas.addEventListener('mouseleave', roiMouseUp);
+      }
+    }
+
+    function disableROISelection() {
+      settingRoi = false;
+      btnSetROI.textContent = 'Set ROI';
+      btnSetROI.disabled = false;
+      btnClearROI.disabled = !roi;
+      roiStatus.style.display = 'none';
+      const canvas = resultViewport.querySelector('canvas');
+      if (canvas) {
+        canvas.style.cursor = '';
+        canvas.removeEventListener('mousedown', roiMouseDown);
+        canvas.removeEventListener('mousemove', roiMouseMove);
+        canvas.removeEventListener('mouseup', roiMouseUp);
+        canvas.removeEventListener('mouseleave', roiMouseUp);
+      }
+    }
+
+    function roiMouseDown(e) {
+      if (!settingRoi) return;
+      const canvas = e.target;
+      const rect = canvas.getBoundingClientRect();
+      roiStart = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    }
+
+    function roiMouseMove(e) {
+      if (!settingRoi || !roiStart) return;
+      const canvas = e.target;
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const ctx = canvas.getContext('2d');
+      const videoEl = resultViewport.querySelector('video');
+      if (videoEl) { ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height); }
+      if (lastDetections.length > 0) {
+        const scale = 640 / canvas.width;
+        drawDetections(ctx, lastDetections, scale);
+      }
+      ctx.strokeStyle = '#2D5A3D';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 5]);
+      ctx.strokeRect(roiStart.x, roiStart.y, x - roiStart.x, y - roiStart.y);
+      ctx.setLineDash([]);
+    }
+
+    function roiMouseUp(e) {
+      if (!settingRoi || !roiStart) return;
+      const canvas = e.target;
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const width = x - roiStart.x;
+      const height = y - roiStart.y;
+      if (Math.abs(width) > 20 && Math.abs(height) > 20) {
+        roi = { x: Math.min(roiStart.x, x), y: Math.min(roiStart.y, y), width: Math.abs(width), height: Math.abs(height) };
+        roiStatus.textContent = 'ROI set: ' + Math.round(roi.width) + '×' + Math.round(roi.height) + ' at (' + Math.round(roi.x) + ',' + Math.round(roi.y) + ')';
+        btnClearROI.disabled = false;
+        showToast('Region of Interest set. Only this area will be analyzed.', 'success');
+      } else { showToast('Selection too small. Please select a larger area.', 'error'); }
+      roiStart = null;
+      disableROISelection();
+    }
+
+    btnSetROI.addEventListener('click', enableROISelection);
+    btnClearROI.addEventListener('click', () => {
+      roi = null;
+      btnClearROI.disabled = true;
+      roiStatus.textContent = '';
+      roiStatus.style.display = 'none';
+      showToast('ROI cleared. Full frame will be analyzed.', 'success');
+    });
+
+    // --- Confidence chart ---
+    function updateConfidenceChart(confidences) {
+      const maxConf = confidences.length > 0 ? Math.max(...confidences) : 0;
+      confidenceHistory.push(maxConf);
+      if (confidenceHistory.length > 30) confidenceHistory.shift();
+      const ctx = confidenceChart.getContext('2d');
+      const width = confidenceChart.width;
+      const height = confidenceChart.height;
+      ctx.clearRect(0, 0, width, height);
+      ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) { const y = (height / 4) * i; ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke(); }
+      for (let i = 0; i <= 10; i++) { const x = (width / 10) * i; ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke(); }
+      if (confidenceHistory.length > 1) {
+        ctx.strokeStyle = '#C0392B';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        confidenceHistory.forEach((conf, i) => { const x = (width / 29) * i; const y = height - (conf * height); if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); });
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(192, 57, 43, 0.1)';
+        ctx.lineTo(width, height); ctx.lineTo(0, height); ctx.closePath(); ctx.fill();
+      }
+      const threshold = parseFloat(confThresholdCam.value);
+      const thresholdY = height - (threshold * height);
+      ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath(); ctx.moveTo(0, thresholdY); ctx.lineTo(width, thresholdY); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.font = '10px monospace';
+      ctx.fillText('Threshold: ' + threshold.toFixed(2), 4, thresholdY - 2);
+    }
+
     // --- Clear button ---
     btnClear.addEventListener('click', () => {
-      currentFile = null;
-      fileInput.value = '';
-      fileName.textContent = '';
+      currentFile = null; fileInput.value = ''; fileName.textContent = '';
       btnDetect.disabled = true;
-      confThreshold.value = '0.35';
-      confValue.textContent = '0.35';
+      confThreshold.value = '0.35'; confValue.textContent = '0.35';
       clearResults();
     });
 
     // --- Detect button (image upload) ---
     btnDetect.addEventListener('click', async () => {
       if (!currentFile || isProcessing) return;
-      isProcessing = true;
-      btnDetect.disabled = true;
-      showProgress(true);
-      setProgress(10);
-      hideError(errorMsg);
-
+      isProcessing = true; btnDetect.disabled = true; showProgress(true); setProgress(10); hideError(errorMsg);
       const formData = new FormData();
       formData.append('file', currentFile);
       const conf = parseFloat(confThreshold.value);
-
       try {
         const response = await fetch('/predict?conf=' + conf, { method: 'POST', body: formData });
-        setProgress(50);
-        const data = await response.json();
-        setProgress(100);
-
-        if (!response.ok) {
-          showError(errorMsg, data.detail || 'Detection failed');
-          return;
-        }
-
-        renderResult(data);
-      } catch (err) {
-        showError(errorMsg, 'Request failed: ' + err.message);
-      } finally {
-        isProcessing = false;
-        btnDetect.disabled = false;
-        setTimeout(() => showProgress(false), 500);
-      }
+        setProgress(50); const data = await response.json(); setProgress(100);
+        if (!response.ok) { showError(errorMsg, data.detail || 'Detection failed'); return; }
+        renderResult(data); addToHistory(data);
+        if (settings.saveScreenshots && data.count > 0) saveScreenshot(data.annotated_image);
+      } catch (err) { showError(errorMsg, 'Request failed: ' + err.message); }
+      finally { isProcessing = false; btnDetect.disabled = false; setTimeout(() => showProgress(false), 500); }
     });
 
     function renderResult(data) {
-      // Image
       const img = new Image();
       img.src = 'data:image/jpeg;base64,' + data.annotated_image;
-      img.className = 'result-image';
-      img.alt = 'Detection result';
-      resultViewport.innerHTML = '';
-      resultViewport.appendChild(img);
-
-      // Inference time
+      img.className = 'result-image'; img.alt = 'Detection result';
+      resultViewport.innerHTML = ''; resultViewport.appendChild(img);
       inferenceTime.textContent = 'Inference time: ' + data.inference_ms.toFixed(1) + ' ms';
-
-      // Detections table
       if (data.count > 0) {
-        detectionsContainer.hidden = false;
-        emptyState.hidden = true;
+        detectionsContainer.hidden = false; emptyState.hidden = true;
         detectionsBody.innerHTML = data.detections.map((d, i) => `
-          <tr>
-            <td>${i + 1}</td>
-            <td class="num">${d.confidence.toFixed(3)}</td>
-            <td class="num">${d.box.map(v => v.toFixed(1)).join(', ')}</td>
-          </tr>
+          <tr><td>${i + 1}</td><td class="num">${d.confidence.toFixed(3)}</td><td class="num">${d.box.map(v => v.toFixed(1)).join(', ')}</td></tr>
         `).join('');
-      } else {
-        detectionsContainer.hidden = true;
-        emptyState.hidden = false;
-      }
+      } else { detectionsContainer.hidden = true; emptyState.hidden = false; }
     }
 
     // --- Camera functions ---
+    async function enumerateCameras() {
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        availableCameras = devices.filter(d => d.kind === 'videoinput');
+        updateCameraSelect();
+      } catch (err) { console.error('Failed to enumerate cameras:', err); cameraSelect.innerHTML = '<option value="">Camera enumeration failed</option>'; }
+    }
+
+    function updateCameraSelect() {
+      if (availableCameras.length === 0) { cameraSelect.innerHTML = '<option value="">No cameras found</option>'; return; }
+      cameraSelect.innerHTML = availableCameras.map((cam, i) =>
+        `<option value="${i}" ${i === currentCameraIndex ? 'selected' : ''}>${cam.label || 'Camera ' + (i + 1)}</option>`
+      ).join('');
+    }
+
+    cameraSelect.addEventListener('change', (e) => {
+      currentCameraIndex = parseInt(e.target.value);
+      if (videoStream) { stopCamera(); setTimeout(startCamera, 300); }
+    });
+
     async function startCamera() {
       hideError(errorMsgCam);
-      btnStartCam.disabled = true;
-      btnStartCam.textContent = 'Starting...';
-
-      try {
-        videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } });
-      } catch (err) {
+      btnStartCam.disabled = true; btnStartCam.textContent = 'Starting...';
+      initAudio();
+      if (audioContext && audioContext.state === 'running') {
+        try {
+          const unlockOsc = audioContext.createOscillator();
+          const unlockGain = audioContext.createGain();
+          unlockGain.gain.value = 0.001;
+          unlockOsc.connect(unlockGain); unlockGain.connect(audioContext.destination);
+          unlockOsc.start(); unlockOsc.stop(audioContext.currentTime + 0.01);
+        } catch (e) {}
+      }
+      const resolution = resolutionSelect.value.split('x').map(Number);
+      const width = resolution[0]; const height = resolution[1];
+      const constraints = {
+        video: {
+          deviceId: availableCameras[currentCameraIndex]?.deviceId ? { exact: availableCameras[currentCameraIndex].deviceId } : undefined,
+          facingMode: availableCameras.length > 1 ? undefined : 'environment',
+          width: { ideal: width }, height: { ideal: height }
+        }
+      };
+      try { videoStream = await navigator.mediaDevices.getUserMedia(constraints); }
+      catch (err) {
         let msg = 'Camera access denied or unavailable.';
         if (err.name === 'NotAllowedError') msg = 'Camera permission denied. Please allow camera access in browser settings.';
         else if (err.name === 'NotFoundError') msg = 'No camera found on this device.';
         else if (err.name === 'NotReadableError') msg = 'Camera is in use by another application.';
-        showError(errorMsgCam, msg);
-        btnStartCam.disabled = false;
-        btnStartCam.textContent = 'Start camera';
-        return;
+        else if (err.name === 'OverconstrainedError') msg = 'Selected resolution not supported by this camera.';
+        showError(errorMsgCam, msg); btnStartCam.disabled = false; btnStartCam.textContent = 'Start camera'; return;
       }
-
-      // Create video element
       const video = document.createElement('video');
-      video.srcObject = videoStream;
-      video.playsInline = true;
-      video.muted = true;
-      await video.play();
-
-      // Create canvas
+      video.srcObject = videoStream; video.playsInline = true; video.muted = true; await video.play();
       const canvas = document.createElement('canvas');
       canvas.className = 'result-canvas';
-      resultViewport.innerHTML = '';
-      resultViewport.appendChild(canvas);
-
+      resultViewport.innerHTML = ''; resultViewport.appendChild(canvas);
       const ctx = canvas.getContext('2d');
-
-      // Show stop button, hide start
-      btnStartCam.hidden = true;
-      btnStopCam.hidden = false;
-      btnStopCam.disabled = false;
-
-      // Reset detection history
-      detectionHistory = [];
-      alertCooldownUntil = 0;
-
-      // Start detection loop
-      lastFrameTime = performance.now();
-      frameCount = 0;
+      btnStartCam.hidden = true; btnStopCam.hidden = false; btnStopCam.disabled = false; fullscreenToggle.hidden = false;
+      detectionHistory = []; alertCooldownUntil = 0;
+      lastFrameTime = performance.now(); frameCount = 0;
       detectionLoop(video, canvas, ctx);
     }
 
     function stopCamera() {
       if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; }
       if (videoStream) { videoStream.getTracks().forEach(t => t.stop()); videoStream = null; }
-      btnStartCam.hidden = false;
-      btnStartCam.disabled = false;
-      btnStartCam.textContent = 'Start camera';
-      btnStopCam.hidden = true;
-      fpsDisplay.textContent = '';
-      confirmCounter.classList.remove('visible', 'alert-pending');
-      clearResults();
+      btnStartCam.hidden = false; btnStartCam.disabled = false; btnStartCam.textContent = 'Start camera';
+      btnStopCam.hidden = true; fpsDisplay.textContent = '';
+      confirmCounter.classList.remove('visible', 'alert-pending'); fullscreenToggle.hidden = true;
+      disableROISelection(); roi = null; confidenceHistory = []; lastDetections = []; clearResults();
     }
 
     btnStartCam.addEventListener('click', startCamera);
@@ -732,141 +1435,95 @@
 
     async function detectionLoop(video, canvas, ctx) {
       if (!videoStream) return;
-
-      const now = performance.now();
-      frameCount++;
-      if (now - lastFrameTime >= 1000) {
-        fps = frameCount;
-        frameCount = 0;
-        lastFrameTime = now;
-        fpsDisplay.textContent = 'FPS: ' + fps;
-      }
-
-      // Only process if not already processing and ~400ms since last
-      if (isProcessing) {
-        animationFrameId = requestAnimationFrame(() => detectionLoop(video, canvas, ctx));
-        return;
-      }
-
-      isProcessing = true;
-
-      // Set canvas size to video size
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-
-      // Draw video frame to canvas (for display)
+      const now = performance.now(); frameCount++;
+      if (now - lastFrameTime >= 1000) { fps = frameCount; frameCount = 0; lastFrameTime = now; fpsDisplay.textContent = 'FPS: ' + fps; }
+      if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) { canvas.width = video.videoWidth; canvas.height = video.videoHeight; }
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      // Prepare frame for inference: scale to 640px width, encode JPEG quality 0.8
-      const scale = 640 / canvas.width;
-      const inferWidth = 640;
-      const inferHeight = Math.round(canvas.height * scale);
-
+      if (roi) {
+        ctx.strokeStyle = '#2D5A3D'; ctx.lineWidth = 2; ctx.setLineDash([8, 4]);
+        ctx.strokeRect(roi.x, roi.y, roi.width, roi.height); ctx.setLineDash([]);
+        ctx.fillStyle = 'rgba(45, 90, 61, 0.1)'; ctx.fillRect(roi.x, roi.y, roi.width, roi.height);
+      }
+      if (lastDetections.length > 0) {
+        const scale = 640 / canvas.width; drawDetections(ctx, lastDetections, scale);
+      }
+      if (now - lastInferenceTime < inferenceInterval) { animationFrameId = requestAnimationFrame(() => detectionLoop(video, canvas, ctx)); return; }
+      lastInferenceTime = now;
+      if (isProcessing) { animationFrameId = requestAnimationFrame(() => detectionLoop(video, canvas, ctx)); return; }
+      isProcessing = true;
+      let sourceCanvas = canvas; let scale = 640 / canvas.width; let inferWidth = 640; let inferHeight = Math.round(canvas.height * scale);
+      if (roi) {
+        const roiCanvas = document.createElement('canvas');
+        roiCanvas.width = roi.width; roiCanvas.height = roi.height;
+        const roiCtx = roiCanvas.getContext('2d');
+        roiCtx.drawImage(canvas, roi.x, roi.y, roi.width, roi.height, 0, 0, roi.width, roi.height);
+        sourceCanvas = roiCanvas; scale = 640 / roi.width; inferWidth = 640; inferHeight = Math.round(roi.height * scale);
+      }
       const tempCanvas = document.createElement('canvas');
-      tempCanvas.width = inferWidth;
-      tempCanvas.height = inferHeight;
-      const tempCtx = tempCanvas.getContext('2d');
-      tempCtx.drawImage(canvas, 0, 0, inferWidth, inferHeight);
-
+      tempCanvas.width = inferWidth; tempCanvas.height = inferHeight;
+      const tempCtx = tempCanvas.getContext('2d'); tempCtx.drawImage(sourceCanvas, 0, 0, inferWidth, inferHeight);
       const blob = await new Promise(resolve => tempCanvas.toBlob(resolve, 'image/jpeg', 0.8));
-
-      // Send to /predict
-      const formData = new FormData();
-      formData.append('file', blob, 'frame.jpg');
+      const formData = new FormData(); formData.append('file', blob, 'frame.jpg');
       const conf = parseFloat(confThresholdCam.value);
-
       try {
         const response = await fetch('/predict?conf=' + conf, { method: 'POST', body: formData });
         const data = await response.json();
-
         if (response.ok) {
-          // Draw detections on main canvas
-          drawDetections(ctx, data.detections, scale);
-
-          // Update multi-frame confirmation
+          if (roi && data.detections.length > 0) {
+            lastDetections = data.detections.map(d => ({ ...d, box: [ (d.box[0] / scale) + roi.x, (d.box[1] / scale) + roi.y, (d.box[2] / scale) + roi.x, (d.box[3] / scale) + roi.y ] }));
+          } else { lastDetections = data.detections; }
+          const confidences = data.detections.map(d => d.confidence); updateConfidenceChart(confidences);
           updateConfirmation(data.detections);
         }
-      } catch (err) {
-        console.error('Detection error:', err);
-      }
-
-      isProcessing = false;
-      animationFrameId = requestAnimationFrame(() => detectionLoop(video, canvas, ctx));
+      } catch (err) { console.error('Detection error:', err); }
+      isProcessing = false; animationFrameId = requestAnimationFrame(() => detectionLoop(video, canvas, ctx));
     }
 
     function drawDetections(ctx, detections, scale) {
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = '#A32020';
-      ctx.fillStyle = '#A32020';
-      ctx.font = '14px monospace';
-
+      const style = settings.boxStyle; const color = '#C0392B'; const fillColor = 'rgba(192, 57, 43, 0.15)';
       for (const d of detections) {
-        // Scale boxes back to canvas size
-        const x1 = d.box[0] / scale;
-        const y1 = d.box[1] / scale;
-        const x2 = d.box[2] / scale;
-        const y2 = d.box[3] / scale;
-        const w = x2 - x1;
-        const h = y2 - y1;
-
-        ctx.strokeRect(x1, y1, w, h);
-        ctx.fillText(d.confidence.toFixed(2), x1, y1 > 18 ? y1 - 4 : y1 + h + 18);
+        const x1 = d.box[0] / scale; const y1 = d.box[1] / scale; const x2 = d.box[2] / scale; const y2 = d.box[3] / scale;
+        const w = x2 - x1; const h = y2 - y1; ctx.lineWidth = 3; ctx.strokeStyle = color;
+        if (style === 'solid' || style === 'filled') { ctx.setLineDash([]); ctx.strokeRect(x1, y1, w, h); }
+        else if (style === 'dashed') { ctx.setLineDash([8, 4]); ctx.strokeRect(x1, y1, w, h); ctx.setLineDash([]); }
+        else if (style === 'corners') {
+          ctx.setLineDash([]); const cornerLen = Math.min(w, h) * 0.15; const lineW = 4; ctx.lineWidth = lineW;
+          ctx.beginPath(); ctx.moveTo(x1, y1 + cornerLen); ctx.lineTo(x1, y1); ctx.lineTo(x1 + cornerLen, y1); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(x2 - cornerLen, y1); ctx.lineTo(x2, y1); ctx.lineTo(x2, y1 + cornerLen); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(x1, y2 - cornerLen); ctx.lineTo(x1, y2); ctx.lineTo(x1 + cornerLen, y2); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(x2 - cornerLen, y2); ctx.lineTo(x2, y2); ctx.lineTo(x2, y2 - cornerLen); ctx.stroke();
+        }
+        if (style === 'filled') { ctx.fillStyle = fillColor; ctx.fillRect(x1, y1, w, h); }
+        if (settings.showLabels) { ctx.fillStyle = color; ctx.font = 'bold 14px monospace'; ctx.fillText(d.confidence.toFixed(2), x1, y1 > 20 ? y1 - 6 : y1 + h + 20); }
       }
     }
 
     function updateConfirmation(detections) {
-      const M = parseInt(paramM.value) || 15;
-      const N = parseInt(paramN.value) || 8;
-
-      // Convert detections to simple box format
-      const boxes = detections.map(d => ({
-        x1: d.box[0], y1: d.box[1], x2: d.box[2], y2: d.box[3], conf: d.confidence
-      }));
-
-      detectionHistory.push(boxes);
-      if (detectionHistory.length > M) detectionHistory.shift();
-
-      // For newest boxes, count overlaps in history
-      let maxOverlapCount = 0;
+      const M = parseInt(paramM.value) || 15; const N = parseInt(paramN.value) || 8;
+      const boxes = detections.map(d => ({ x1: d.box[0], y1: d.box[1], x2: d.box[2], y2: d.box[3], conf: d.confidence }));
+      detectionHistory.push(boxes); if (detectionHistory.length > M) detectionHistory.shift();
+      let maxOverlapCount = 0; let triggerBox = null;
       for (const newBox of boxes) {
         let count = 0;
-        for (const frameBoxes of detectionHistory) {
-          for (const oldBox of frameBoxes) {
-            if (iou(newBox, oldBox) >= 0.2) { count++; break; }
-          }
-        }
-        maxOverlapCount = Math.max(maxOverlapCount, count);
+        for (const frameBoxes of detectionHistory) { for (const oldBox of frameBoxes) { if (iou(newBox, oldBox) >= 0.2) { count++; break; } } }
+        if (count > maxOverlapCount) { maxOverlapCount = count; triggerBox = newBox; }
       }
-
-      confirmCounter.classList.add('visible');
-      confirmCounter.classList.remove('alert-pending');
+      confirmCounter.classList.add('visible'); confirmCounter.classList.remove('alert-pending');
       confirmCounter.textContent = 'Confirmed in ' + maxOverlapCount + ' of the last ' + M + ' frames (need ' + N + ')';
-
-      // Check alert condition
       const now = Date.now();
-      if (maxOverlapCount >= N && now >= alertCooldownUntil) {
-        // Trigger alert
+      if (maxOverlapCount >= N && now >= alertCooldownUntil && triggerBox) {
         confirmCounter.classList.add('alert-pending');
-        showAlertBanner('ALERT. Possible weapon in ' + N + ' of the last ' + M + ' frames. Human review required.');
-
-        // Send to /alerts/log
-        sendAlertLog(newBox, M, N);
-
-        // Keep alert banner for 5 seconds
-        setTimeout(() => {
-          alertBanner.classList.remove('visible');
-        }, 5000);
-
-        // Cooldown 5 seconds
+        const msg = 'ALERT. Possible weapon in ' + N + ' of the last ' + M + ' frames. Human review required.';
+        showAlertBanner(msg); playSound(settings.soundType);
+        sendAlertLog(triggerBox, M, N);
+        setTimeout(() => { alertBanner.classList.remove('visible'); }, 5000);
         alertCooldownUntil = now + 5000;
       }
     }
 
     function iou(box1, box2) {
-      const x1 = Math.max(box1.x1, box2.x1);
-      const y1 = Math.max(box1.y1, box2.y1);
-      const x2 = Math.min(box1.x2, box2.x2);
-      const y2 = Math.min(box1.y2, box2.y2);
+      const x1 = Math.max(box1.x1, box2.x1); const y1 = Math.max(box1.y1, box2.y1);
+      const x2 = Math.min(box1.x2, box2.x2); const y2 = Math.min(box1.y2, box2.y2);
       const inter = Math.max(0, x2 - x1) * Math.max(0, y2 - y1);
       const area1 = (box1.x2 - box1.x1) * (box1.y2 - box1.y1);
       const area2 = (box2.x2 - box2.x1) * (box2.y2 - box2.y1);
@@ -874,58 +1531,89 @@
     }
 
     async function sendAlertLog(triggerBox, M, N) {
-      // Get current canvas as blob
-      const canvas = resultViewport.querySelector('canvas');
-      if (!canvas) return;
-
+      const canvas = resultViewport.querySelector('canvas'); if (!canvas) return;
       const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.8));
-      const formData = new FormData();
-      formData.append('file', blob, 'alert.jpg');
-      formData.append('max_conf', triggerBox.conf.toFixed(3));
-      formData.append('source', 'webcam');
-
-      try {
-        await fetch('/alerts/log', { method: 'POST', body: formData });
-        loadAlerts();
-      } catch (err) {
-        console.error('Failed to log alert:', err);
-      }
+      const formData = new FormData(); formData.append('file', blob, 'alert.jpg'); formData.append('max_conf', triggerBox.conf.toFixed(3)); formData.append('source', 'webcam');
+      try { await fetch('/alerts/log', { method: 'POST', body: formData }); loadAlerts(); } catch (err) { console.error('Failed to log alert:', err); }
     }
 
-    // --- Load recent alerts ---
     async function loadAlerts() {
-      try {
-        const response = await fetch('/alerts?limit=20');
-        const data = await response.json();
-        renderAlerts(data.alerts || []);
-      } catch (err) {
-        alertsGrid.innerHTML = '<div class="alerts-empty">Failed to load alerts.</div>';
-      }
+      try { const response = await fetch('/alerts?limit=20'); const data = await response.json(); renderAlerts(data.alerts || []); }
+      catch (err) { alertsGrid.innerHTML = '<div class="alerts-empty">Failed to load alerts.</div>'; }
     }
 
     function renderAlerts(alerts) {
-      if (!alerts.length) {
-        alertsGrid.innerHTML = '<div class="alerts-empty">No alerts recorded yet.</div>';
-        return;
-      }
+      if (!alerts.length) { alertsGrid.innerHTML = '<div class="alerts-empty">No alerts recorded yet.</div>'; return; }
       alertsGrid.innerHTML = alerts.map(a => {
         const thumbUrl = a.url || '/alert-images/' + a.evidence_image.split('/').pop();
-        return `
-          <div class="alert-card">
-            <img class="alert-thumb" src="${thumbUrl}" alt="Alert evidence" loading="lazy">
-            <div class="alert-time">${new Date(a.timestamp).toLocaleString()}</div>
-            <div class="alert-conf">Confidence: ${a.max_conf.toFixed(2)}</div>
-            <div class="alert-source">${a.source}</div>
-          </div>
-        `;
+        return `<div class="alert-card"><img class="alert-thumb" src="${thumbUrl}" alt="Alert evidence" loading="lazy"><div class="alert-time">${new Date(a.timestamp).toLocaleString()}</div><div class="alert-conf">Confidence: ${a.max_conf.toFixed(2)}</div><div class="alert-source">${a.source}</div></div>`;
       }).join('');
     }
 
-    // --- Initialize ---
+    function addToHistory(data) {
+      const time = new Date().toLocaleTimeString(); const count = data.count;
+      const maxConf = count > 0 ? Math.max(...data.detections.map(d => d.confidence)) : 0;
+      detectionHistoryLog.unshift({ time, count, maxConf, detections: data.detections });
+      if (detectionHistoryLog.length > 50) detectionHistoryLog.pop(); renderHistory();
+    }
+
+    function renderHistory() {
+      if (detectionHistoryLog.length === 0) { historyList.innerHTML = '<div class="table-empty" style="padding: var(--spacing-sm); font-size: 0.8125rem;">No detections yet</div>'; return; }
+      historyList.innerHTML = detectionHistoryLog.map(h => `
+        <div class="history-item"><span class="history-time">${h.time}</span><span class="history-detections">${h.count} detection${h.count !== 1 ? 's' : ''}${h.count > 0 ? ' • Max conf: ' + h.maxConf.toFixed(2) : ''}</span></div>
+      `).join('');
+    }
+
+    btnClearHistory.addEventListener('click', () => { detectionHistoryLog = []; renderHistory(); showToast('Detection history cleared', 'success'); });
+
+    btnExportAlerts.addEventListener('click', async () => {
+      try {
+        const response = await fetch('/alerts?limit=1000'); const data = await response.json();
+        if (!data.alerts || !data.alerts.length) { showToast('No alerts to export', 'info'); return; }
+        const headers = ['timestamp', 'source', 'frame', 'video_time_s', 'max_conf', 'evidence_image', 'url'];
+        const rows = data.alerts.map(a => [a.timestamp, a.source, a.frame, a.video_time_s, a.max_conf, a.evidence_image, a.url || ''].map(v => '"' + String(v).replace(/"/g, '""') + '"').join(','));
+        const csv = [headers.join(','), ...rows].join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob); const a = document.createElement('a');
+        a.href = url; a.download = 'alerts_' + new Date().toISOString().slice(0,19).replace(/:/g, '-') + '.csv'; a.click(); URL.revokeObjectURL(url);
+        showToast('Alerts exported as CSV', 'success');
+      } catch (err) { showToast('Export failed: ' + err.message, 'error'); }
+    });
+
+    btnClearAlerts.addEventListener('click', async () => {
+      if (!confirm('Clear the alert list from view? This does not delete the server log or evidence images.')) return;
+      try { alertsGrid.innerHTML = '<div class="alerts-empty">Alert list cleared from view. Server log and evidence images persist.</div>'; showToast('Alert list cleared from view', 'success'); } catch (err) { showToast('Failed to clear alerts', 'error'); }
+    });
+
+    function saveScreenshot(base64Image) {
+      try { const link = document.createElement('a'); link.href = 'data:image/jpeg;base64,' + base64Image; link.download = 'detection_' + new Date().toISOString().slice(0,19).replace(/:/g, '-') + '.jpg'; link.click(); } catch (e) { console.warn('Failed to save screenshot:', e); }
+    }
+
+    let fullscreenActive = false;
+    fullscreenToggle.addEventListener('click', () => {
+      if (!fullscreenActive) { if (resultViewport.requestFullscreen) { resultViewport.requestFullscreen().catch(console.error); fullscreenActive = true; fullscreenToggle.textContent = 'Exit Fullscreen'; } }
+      else { if (document.exitFullscreen) { document.exitFullscreen().catch(console.error); fullscreenActive = false; fullscreenToggle.textContent = 'Fullscreen'; } }
+    });
+    document.addEventListener('fullscreenchange', () => { fullscreenActive = !!document.fullscreenElement; resultViewport.classList.toggle('fullscreen', fullscreenActive); fullscreenToggle.textContent = fullscreenActive ? 'Exit Fullscreen' : 'Fullscreen'; });
+
+    settingsToggle.addEventListener('click', () => { const expanded = settingsContent.classList.toggle('visible'); settingsToggle.setAttribute('aria-expanded', expanded); settingsChevron.textContent = expanded ? '▲' : '▼'; });
+
+    settingSoundEnabled.addEventListener('change', () => { settings.soundEnabled = settingSoundEnabled.checked; saveSettings(); });
+    settingSoundSelect.addEventListener('change', () => { settings.soundType = settingSoundSelect.value; saveSettings(); });
+    settingVolume.addEventListener('input', () => { settings.volume = parseFloat(settingVolume.value); volumeValue.textContent = Math.round(settings.volume * 100) + '%'; saveSettings(); });
+    settingVisualAlert.addEventListener('change', () => { settings.visualAlert = settingVisualAlert.checked; saveSettings(); });
+    settingBoxStyle.addEventListener('change', () => { settings.boxStyle = settingBoxStyle.value; saveSettings(); });
+    settingShowLabels.addEventListener('change', () => { settings.showLabels = settingShowLabels.checked; saveSettings(); });
+    settingAutoRefresh.addEventListener('change', () => { settings.autoRefresh = settingAutoRefresh.checked; saveSettings(); });
+    settingSaveScreenshots.addEventListener('change', () => { settings.saveScreenshots = settingSaveScreenshots.checked; saveSettings(); });
+
+    btnTestSound.addEventListener('click', async () => { await playSound(settings.soundType); showToast('Playing test sound: ' + settings.soundType, 'info'); });
+
+    themeToggle.addEventListener('click', toggleTheme);
+
     tabs.forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
-    loadAlerts();
-    // Refresh alerts every 10 seconds
-    setInterval(loadAlerts, 10000);
+    loadSettings(); loadTheme(); enumerateCameras(); loadAlerts();
+    setInterval(() => { if (settings.autoRefresh) loadAlerts(); }, 10000);
   </script>
 </body>
 </html>
