@@ -45,17 +45,21 @@ async def lifespan(app: FastAPI):
     """Load model at startup, clean up at shutdown."""
     global model, device
     import torch
-    
+
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model = YOLO(str(MODEL_PATH))
     model.to(device)
     print(f"Model loaded on {device}: {MODEL_PATH}")
-    
+
     # Warm up: run one dummy inference to avoid cold start
     dummy_img = np.zeros((640, 640, 3), dtype=np.uint8)
     model.predict(dummy_img, imgsz=INFERENCE_IMG_SIZE, conf=DEFAULT_CONFIDENCE, verbose=False)
     print("Model warmed up with dummy inference")
-    
+
+    # Ensure alert images directory exists (alerts/ is git-ignored)
+    ALERT_IMAGES_DIR.mkdir(parents=True, exist_ok=True)
+    print(f"Alert images directory ready: {ALERT_IMAGES_DIR}")
+
     yield
     model = None
 
