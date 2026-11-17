@@ -30,6 +30,9 @@ Thumbs.db
 runs/
 weights/
 
+# Allow production model file
+!runs/detect/v3/weights/best.pt
+
 # Datasets (large files)
 dataset_detection/
 *.zip

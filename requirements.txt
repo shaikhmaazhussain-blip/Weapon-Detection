@@ -1,8 +1,8 @@
 fastapi==0.162.5
 uvicorn==0.54.0
 ultralytics==8.4.126
-torch==2.5.1+cu121
-torchvision==0.20.1+cu121
+torch==2.5.1+cpu
+torchvision==0.20.1+cpu
 opencv-python==4.10.0.84
 pillow==13.0.0
 pydantic==2.14.3

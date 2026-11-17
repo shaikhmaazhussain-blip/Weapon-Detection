@@ -1,0 +1,1 @@
+"""Weapon Detection API package."""
