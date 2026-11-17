@@ -81,6 +81,7 @@ app.add_middleware(
 )
 
 # Serve alert images
+ALERT_IMAGES_DIR.mkdir(parents=True, exist_ok=True)
 app.mount("/alert-images", StaticFiles(directory=str(ALERT_IMAGES_DIR)), name="alert-images")
 
 
