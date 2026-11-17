@@ -176,10 +176,10 @@
       <h1 class="section-title">Privacy notice</h1>
 
       <h2 class="subsection-title">Image upload mode</h2>
-      <p>Uploaded images are processed in memory and are not stored on the server. No copy of the uploaded file is written to disk. The image is decoded, passed to the model, and the annotated result is returned as a base64-encoded JPEG in the API response.</p>
+      <p>When you use this hosted site, the selected image is sent over HTTPS to the Weapon Detection server for inference. The server processes the upload in memory and returns the annotated result to your browser; it does not save the original upload as a file. Alert evidence may be saved separately when an alert is logged.</p>
 
       <h2 class="subsection-title">Live camera mode</h2>
-      <p>In camera mode, the video stream stays on your computer. Frames are captured locally, scaled, encoded as JPEG, and sent to the local server (http://127.0.0.1:8000) for inference. No video data leaves your machine.</p>
+      <p>Your browser captures camera frames locally, scales and encodes them as JPEG images, and sends those frames over HTTPS to this hosted server for inference. The continuous camera stream is not uploaded, but the individual frames used for detection leave your device.</p>
 
       <h2 class="subsection-title">Alert evidence</h2>
       <p>An evidence image is saved to the server's <code>alerts/images/</code> directory only when an alert is raised (either by the multi-frame confirmation in the browser or by the <code>alert_video.py</code> script). The evidence image is saved alongside a row in <code>alerts/alert_log.csv</code> with the same columns: timestamp, source, frame, video_time_s, max_conf, evidence_image.</p>
@@ -188,12 +188,12 @@
       <ul>
         <li>No cookies are set.</li>
         <li>No analytics or telemetry are collected.</li>
-        <li>No external network requests are made by the frontend or the API.</li>
-        <li>All processing happens locally on your machine or your local network.</li>
+        <li>The app does not send data to analytics providers or other third-party tracking services. Images and camera frames are sent to this hosted service for inference.</li>
+        <li>Model inference runs on the hosted server, not on your device.</li>
       </ul>
 
       <h2 class="subsection-title">Data retention</h2>
-      <p>Alert logs and evidence images persist on the local filesystem until you delete them. You can remove the <code>alerts/</code> directory at any time.</p>
+      <p>When an alert is logged, its record and any evidence image are written to the service's <code>alerts/</code> directory. This deployment uses Render's free instance without a persistent disk, so these files may be lost when the service restarts or is redeployed. Do not rely on this service for permanent evidence storage.</p>
     </section>
 
     <section class="section">
